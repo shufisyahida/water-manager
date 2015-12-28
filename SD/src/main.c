@@ -78,7 +78,7 @@ static void setWaterDebit(void *pvParameters)
 		adc_enable(&MY_ADC);
 		adc_start_conversion(&MY_ADC, MY_ADC_CH);
 		adc_wait_for_interrupt_flag(&MY_ADC, MY_ADC_CH);
-		debit = adc_get_result(&MY_ADC, MY_ADC_CH)/100;
+		debit = adc_get_result(&MY_ADC, MY_ADC_CH)/1000;
 		vTaskDelay(5);
 	}
 }
@@ -88,6 +88,7 @@ static void countWaterUsage(void *vpParameters) {
 	while(1) {
 		if(isTapOpened==1) {
 			nvm_eeprom_write_byte(1, waterUsage + debit);
+			waterUsage = nvm_eeprom_read_byte(1);
 		}
 		vTaskDelay(5);
 	}
@@ -138,7 +139,7 @@ static void waterAlertTask(void *pvParameters) {
 	while(1) {
 		if(waterUsage > maxWater && isTapOpened==1) {
 			waterAlertOn();
-			vTaskDelay(500);
+			vTaskDelay(50);
 			waterAlertOff();
 		}
 		vTaskDelay(10);
@@ -172,9 +173,10 @@ void clearLCD(void){
 
 static void vLCD(void *pvParameters)
 {
-	gfx_mono_draw_string("Suhu    : ", 0, 16, &sysfont);
+	gfx_mono_draw_string("Water   : ", 0, 16, &sysfont);
 	gfx_mono_draw_string("Debit   : ", 0, 24, &sysfont);
 	gfx_mono_draw_string("Keran   : ", 0, 8, &sysfont);
+	gfx_mono_draw_string("Usage   : ", 0, 0, &sysfont);
 	while(1){
 		if(isTapOpened==1) gfx_mono_draw_string("Terbuka ", 60, 8, &sysfont);
 		if(isTapOpened==0) gfx_mono_draw_string("Tertutup", 60, 8, &sysfont);
@@ -183,6 +185,12 @@ static void vLCD(void *pvParameters)
 		
 		snprintf(strbuf, sizeof(strbuf), "%3d", debit);
 		gfx_mono_draw_string(strbuf, 60, 24, &sysfont);
+		
+		snprintf(strbuf, sizeof(strbuf), "%3d", waterUsage);
+		gfx_mono_draw_string(strbuf, 60, 0, &sysfont);
+		
+		snprintf(strbuf, sizeof(strbuf), "%3d", waterIntensity);
+		gfx_mono_draw_string(strbuf, 60, 16, &sysfont);
 		
 		vTaskDelay(1);
 		//clearLCD();
@@ -212,14 +220,16 @@ int main (void)
 	cpu_irq_enable(); // konfigurasi untuk menghidupkan interrupt
 	pmic_init(); //konfigurasi untuk menyalakan semua interrupt dan mengatur prioritas task
 	pwm_init();
-	
+	adc_init();
+	gpio_set_pin_high(NHD_C12832A1Z_BACKLIGHT);
+	setMaxWater(200);
 	xTaskCreate(openCloseTap, "", 200, NULL, 1, NULL);
 	xTaskCreate(setWaterDebit, "", 200, NULL, 1, NULL);
 	xTaskCreate(countWaterUsage, "", 400, NULL, 1, NULL);
-//	xTaskCreate(waterAlertTask, "", 200, NULL, 1, NULL);
-//	xTaskCreate(checkWater, "", 200, NULL, 1, NULL);
+	xTaskCreate(waterAlertTask, "", 200, NULL, 1, NULL);
+	xTaskCreate(checkWater, "", 200, NULL, 1, NULL);
 	xTaskCreate(vLCD, "", 600, NULL, 1, NULL);
-//	xTaskCreate(checkTap, "", 200, NULL, 1, NULL);
+	xTaskCreate(checkTap, "", 200, NULL, 1, NULL);
 
 	vTaskStartScheduler();
 }
