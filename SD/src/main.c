@@ -137,6 +137,7 @@ void waterAlertOff(void) {
 
 static void waterAlertTask(void *pvParameters) {
 	while(1) {
+		gpio_set_pin_high(NHD_C12832A1Z_BACKLIGHT);
 		if(waterUsage > maxWater && isTapOpened==1) {
 			waterAlertOn();
 			vTaskDelay(50);
@@ -177,11 +178,13 @@ static void vLCD(void *pvParameters)
 	gfx_mono_draw_string("Debit   : ", 0, 24, &sysfont);
 	gfx_mono_draw_string("Keran   : ", 0, 8, &sysfont);
 	gfx_mono_draw_string("Usage   : ", 0, 0, &sysfont);
+	gpio_set_pin_high(NHD_C12832A1Z_BACKLIGHT);
 	while(1){
 		if(isTapOpened==1) gfx_mono_draw_string("Terbuka ", 60, 8, &sysfont);
 		if(isTapOpened==0) gfx_mono_draw_string("Tertutup", 60, 8, &sysfont);
 		
-		gfx_mono_draw_string(waterTemp, 60, 16, &sysfont);
+		snprintf(strbuf, sizeof(strbuf), "%3d", waterTemp);
+		gfx_mono_draw_string(strbuf, 60, 16, &sysfont);
 		
 		snprintf(strbuf, sizeof(strbuf), "%3d", debit);
 		gfx_mono_draw_string(strbuf, 60, 24, &sysfont);
@@ -201,10 +204,10 @@ static void vLCD(void *pvParameters)
 static void checkTap(void *pvParameters) {
 	while(1) {
 		if(isTapOpened == 0) {
-			LED_Off(LED1);
+			LED_Off(LED2);
 		}
 		if(isTapOpened == 1) {
-			LED_On(LED1);
+			LED_On(LED2);
 		}
 		vTaskDelay(1);
 	}
@@ -221,12 +224,12 @@ int main (void)
 	pmic_init(); //konfigurasi untuk menyalakan semua interrupt dan mengatur prioritas task
 	pwm_init();
 	adc_init();
-	gpio_set_pin_high(NHD_C12832A1Z_BACKLIGHT);
+	waterUsage = nvm_eeprom_read_byte(1);
 	setMaxWater(200);
 	xTaskCreate(openCloseTap, "", 200, NULL, 1, NULL);
 	xTaskCreate(setWaterDebit, "", 200, NULL, 1, NULL);
 	xTaskCreate(countWaterUsage, "", 400, NULL, 1, NULL);
-	xTaskCreate(waterAlertTask, "", 200, NULL, 1, NULL);
+	xTaskCreate(waterAlertTask, "", 400, NULL, 1, NULL);
 	xTaskCreate(checkWater, "", 200, NULL, 1, NULL);
 	xTaskCreate(vLCD, "", 600, NULL, 1, NULL);
 	xTaskCreate(checkTap, "", 200, NULL, 1, NULL);
