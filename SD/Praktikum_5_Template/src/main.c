@@ -1,5 +1,5 @@
 /**
- * \file
+ * \file XD
  *
  * \brief Empty user application template
  *
