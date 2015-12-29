@@ -79,7 +79,8 @@ static void setWaterDebit(void *pvParameters)
 		adc_start_conversion(&MY_ADC, MY_ADC_CH);
 		adc_wait_for_interrupt_flag(&MY_ADC, MY_ADC_CH);
 		debit = adc_get_result(&MY_ADC, MY_ADC_CH)/1000;
-		vTaskDelay(5);
+		vTaskDelay(500);
+		
 	}
 }
 
