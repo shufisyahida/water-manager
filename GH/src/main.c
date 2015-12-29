@@ -36,10 +36,10 @@ char still[20] = "coba panjang diam \n";
 bool is_sending = false;
 bool is_receive = false;
 
-int menuSelected = 1;
-int maxFeature = 14;
+int menuSelected = 0;
+int maxFeature = 3;
 int maxStatus = 6;
-bool switchDisp = false;
+bool switchDisp = true;
 int feature_selected = 0;
 int status_displayed = 0;
 
@@ -138,14 +138,33 @@ void switchDisplay(int dest){
 void initMenu(void){
 	
 	int nn;
+	maxFeature=7;
+	maxStatus=5;
+	
 	for(nn=0; nn<=maxFeature; nn++){
 		//inisialisasi fitur, awalnya empty
-		snprintf(strbuf_in, sizeof(strbuf_in),"empty", nn);
-		featureList[nn] = strbuf_in;
+		//snprintf(strbuf_in, sizeof(strbuf_in),"empty", nn);
+		//featureList[nn] = strbuf_in;
 		featureStat[nn] = false;
 	}
+	
+	featureList[0] = "Tap 1       ";
+	featureList[1] = "Tap 2       ";
+	featureList[2] = "Tap 3       ";
+	featureList[3] = "Tap 4       ";
+	featureList[4] = "Discharge   ";
+	featureList[5] = "Man Watering";
+	featureList[6] = "Water Farm  ";
+	
+	
+	statusList[0] = "Water Usage    ";
+	statusList[1] = "Water Storage  ";
+	statusList[2] = "Alarm Status   ";
+	statusList[3] = "Water Temp     ";
+	statusList[4] = "Watering Manual";
+	
 	for(nn=0; nn<=maxStatus; nn++){
-		statusList[nn]="...";
+		//statusList[nn]="...";
 	}
 }
 
@@ -246,9 +265,8 @@ static portTASK_FUNCTION(printLCD, p_){
 		else if(menuSelected==4){
 			gfx_mono_draw_string("==   SD's Status   ==",0,0,&sysfont);
 			int jj;
-			for(jj=0; jj<maxStatus; jj++){
-				
-			}
+			
+			
 			gfx_mono_draw_string(statusList[status_displayed],0, (SYSFONT_HEIGHT)+1, &sysfont);
 		}
 			
