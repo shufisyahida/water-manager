@@ -282,9 +282,9 @@ src/ASF/common/services/ioport/xmega/ioport_compat.d \
 src/ASF/xmega/boards/xmega_a3bu_xplained/init.d \
 src/main.d
 
-OUTPUT_FILE_PATH +=TestPratikum2.elf
+OUTPUT_FILE_PATH +=TestPratikum2_6_2.elf
 
-OUTPUT_FILE_PATH_AS_ARGS +=TestPratikum2.elf
+OUTPUT_FILE_PATH_AS_ARGS +=TestPratikum2_6_2.elf
 
 ADDITIONAL_DEPENDENCIES:=
 
@@ -564,13 +564,13 @@ all: $(OUTPUT_FILE_PATH) $(ADDITIONAL_DEPENDENCIES)
 $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER_SCRIPT_DEP)
 	@echo Building target: $@
 	@echo Invoking: AVR/GNU Linker : 4.8.1
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="TestPratikum2.map" -Wl,--start-group -Wl,-lavrxmega6g1-4qt-k-0rs -Wl,-lm  -Wl,--end-group -Wl,-L"../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc"  -Wl,--gc-sections -mrelax -mmcu=atxmega256a3bu -Wl,--relax -Wl,--section-start=.BOOT=0x40000  
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="TestPratikum2_6_2.map" -Wl,--start-group -Wl,-lavrxmega6g1-4qt-k-0rs -Wl,-lm  -Wl,--end-group -Wl,-L"../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc"  -Wl,--gc-sections -mrelax -mmcu=atxmega256a3bu -Wl,--relax -Wl,--section-start=.BOOT=0x40000  
 	@echo Finished building target: $@
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "TestPratikum2.elf" "TestPratikum2.hex"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "TestPratikum2.elf" "TestPratikum2.eep" || exit 0
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "TestPratikum2.elf" > "TestPratikum2.lss"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "TestPratikum2.elf" "TestPratikum2.srec"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-size.exe" "TestPratikum2.elf"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "TestPratikum2_6_2.elf" "TestPratikum2_6_2.hex"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "TestPratikum2_6_2.elf" "TestPratikum2_6_2.eep" || exit 0
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "TestPratikum2_6_2.elf" > "TestPratikum2_6_2.lss"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "TestPratikum2_6_2.elf" "TestPratikum2_6_2.srec"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-size.exe" "TestPratikum2_6_2.elf"
 	
 	
 
@@ -582,5 +582,5 @@ $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER
 clean:
 	-$(RM) $(OBJS_AS_ARGS) $(EXECUTABLES)  
 	-$(RM) $(C_DEPS_AS_ARGS)   
-	rm -rf "TestPratikum2.elf" "TestPratikum2.a" "TestPratikum2.hex" "TestPratikum2.lss" "TestPratikum2.eep" "TestPratikum2.map" "TestPratikum2.srec" "TestPratikum2.usersignatures"
+	rm -rf "TestPratikum2_6_2.elf" "TestPratikum2_6_2.a" "TestPratikum2_6_2.hex" "TestPratikum2_6_2.lss" "TestPratikum2_6_2.eep" "TestPratikum2_6_2.map" "TestPratikum2_6_2.srec" "TestPratikum2_6_2.usersignatures"
 	

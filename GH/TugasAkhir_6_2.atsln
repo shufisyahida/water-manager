@@ -1,9 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "TugasAkhir", "TugasAkhir_6_2.cproj", "{9C41AD1D-5192-49BE-8E73-F3A6E3DF249B}"
-EndProject
-Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "USART_EXAMPLE2", "C:\Users\Novian\Documents\Atmel Studio\6.2\USART_EXAMPLE2\USART_EXAMPLE2.cproj", "{67D44EEC-1647-4924-B155-F9CB4EF12E84}"
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "TugasAkhir_6_2", "TugasAkhir_6_2.cproj", "{9C41AD1D-5192-49BE-8E73-F3A6E3DF249B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +12,6 @@ Global
 		{9C41AD1D-5192-49BE-8E73-F3A6E3DF249B}.Debug|AVR.Build.0 = Debug|AVR
 		{9C41AD1D-5192-49BE-8E73-F3A6E3DF249B}.Release|AVR.ActiveCfg = Release|AVR
 		{9C41AD1D-5192-49BE-8E73-F3A6E3DF249B}.Release|AVR.Build.0 = Release|AVR
-		{67D44EEC-1647-4924-B155-F9CB4EF12E84}.Debug|AVR.ActiveCfg = Debug|AVR
-		{67D44EEC-1647-4924-B155-F9CB4EF12E84}.Debug|AVR.Build.0 = Debug|AVR
-		{67D44EEC-1647-4924-B155-F9CB4EF12E84}.Release|AVR.ActiveCfg = Release|AVR
-		{67D44EEC-1647-4924-B155-F9CB4EF12E84}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

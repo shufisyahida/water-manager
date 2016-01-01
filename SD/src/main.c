@@ -20,12 +20,57 @@ void waterAlertOff(void);
 
 static char strbuf[201];
 
+char reads[100] = "";
+
 int isTapOpened = 0;
 int waterTemp = 0;
 int waterIntensity = 0;
 int waterUsage = 0;
 int maxWater = 0;
 int debit = 0;
+
+void setUpSerial(){
+	//Baud rate selection
+	//BSEI = (2000000/(2^0 * 16*9600) -1 = 12.0208.... ~12) ->BSALE =0
+	
+	USARTC0_BAUDCTRLB = 0;
+	USARTC0_BAUDCTRLA = 0x0C;
+	
+	//Disable interrupts, just for safety
+	USARTC0_CTRLA =0;
+	USARTC0_CTRLC = USART_CHSIZE_8BIT_gc;
+	
+	USARTC0_CTRLB= USART_TXEN_bm | USART_RXEN_bm;
+	
+}
+void sendChar(char c){
+	while (!(USARTC0_STATUS & USART_DREIF_bm));
+	
+	USARTC0_DATA = c;
+	
+}
+
+char receiveChar()
+{
+	while(!(USARTC0_STATUS & USART_RXCIF_bm));
+	return USARTC0_DATA;
+}
+void sendString(char *text){
+	while(*text){
+		sendChar(*text++);
+	}
+}
+void receiveString()
+{
+	
+	int i =0;
+	while(1){
+		char inp = receiveChar();
+		if(inp=='\n') break;
+		else reads[i++] = inp;
+	}
+}
+
 
 static void openCloseTap(void *pvParameters)
 {
@@ -45,12 +90,27 @@ static void openCloseTap(void *pvParameters)
 }
 
 void getWaterUsage(void) {
-	waterUsage = nvm_eeprom_read_byte(1);
+	int i=1;
+	int Subtotal=0;
+	int total=0;
+	bool habis = false;
+	while(!habis){		
+		Subtotal = nvm_eeprom_read_byte(i);
+		if(Subtotal>=255){
+			i++;			
+		}
+		else{
+			habis=true;
+		}
+		total+=Subtotal;
+		Subtotal=0;
+	}
+	waterUsage=total;
 }
 
 void setMaxWater(int max) {
 	nvm_eeprom_write_byte(2, max);
-	maxWater = max;
+	maxWater = 1500;
 }
 
 //Mengatur suhu air (potensiometer)
@@ -225,6 +285,15 @@ int main (void)
 	pmic_init(); //konfigurasi untuk menyalakan semua interrupt dan mengatur prioritas task
 	pwm_init();
 	adc_init();
+	
+	PORTC_OUTSET = PIN3_bm;
+	PORTC_DIRSET = PIN3_bm;
+	
+	PORTC_OUTCLR = PIN2_bm;
+	PORTC_DIRCLR = PIN2_bm;
+	
+	setUpSerial();
+	
 	waterUsage = nvm_eeprom_read_byte(1);
 	setMaxWater(200);
 	xTaskCreate(openCloseTap, "", 200, NULL, 1, NULL);

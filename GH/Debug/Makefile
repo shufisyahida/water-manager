@@ -276,9 +276,9 @@ src/ASF/common/services/ioport/xmega/ioport_compat.d \
 src/ASF/xmega/boards/xmega_a3bu_xplained/init.d \
 src/main.d
 
-OUTPUT_FILE_PATH +=TugasAkhir.elf
+OUTPUT_FILE_PATH +=TugasAkhir_6_2.elf
 
-OUTPUT_FILE_PATH_AS_ARGS +=TugasAkhir.elf
+OUTPUT_FILE_PATH_AS_ARGS +=TugasAkhir_6_2.elf
 
 ADDITIONAL_DEPENDENCIES:=
 
@@ -556,13 +556,13 @@ all: $(OUTPUT_FILE_PATH) $(ADDITIONAL_DEPENDENCIES)
 $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER_SCRIPT_DEP)
 	@echo Building target: $@
 	@echo Invoking: AVR/GNU Linker : 4.8.1
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="TugasAkhir.map" -Wl,--start-group -Wl,-lavrxmega6g1-4qt-k-0rs -Wl,-lm  -Wl,--end-group -Wl,-L"../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc"  -Wl,--gc-sections -mrelax -mmcu=atxmega256a3bu -Wl,--relax -Wl,--section-start=.BOOT=0x40000  
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="TugasAkhir_6_2.map" -Wl,--start-group -Wl,-lavrxmega6g1-4qt-k-0rs -Wl,-lm  -Wl,--end-group -Wl,-L"../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc"  -Wl,--gc-sections -mrelax -mmcu=atxmega256a3bu -Wl,--relax -Wl,--section-start=.BOOT=0x40000  
 	@echo Finished building target: $@
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "TugasAkhir.elf" "TugasAkhir.hex"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "TugasAkhir.elf" "TugasAkhir.eep" || exit 0
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "TugasAkhir.elf" > "TugasAkhir.lss"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "TugasAkhir.elf" "TugasAkhir.srec"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-size.exe" "TugasAkhir.elf"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "TugasAkhir_6_2.elf" "TugasAkhir_6_2.hex"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "TugasAkhir_6_2.elf" "TugasAkhir_6_2.eep" || exit 0
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "TugasAkhir_6_2.elf" > "TugasAkhir_6_2.lss"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "TugasAkhir_6_2.elf" "TugasAkhir_6_2.srec"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-size.exe" "TugasAkhir_6_2.elf"
 	
 	
 
@@ -574,5 +574,5 @@ $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER
 clean:
 	-$(RM) $(OBJS_AS_ARGS) $(EXECUTABLES)  
 	-$(RM) $(C_DEPS_AS_ARGS)   
-	rm -rf "TugasAkhir.elf" "TugasAkhir.a" "TugasAkhir.hex" "TugasAkhir.lss" "TugasAkhir.eep" "TugasAkhir.map" "TugasAkhir.srec" "TugasAkhir.usersignatures"
+	rm -rf "TugasAkhir_6_2.elf" "TugasAkhir_6_2.a" "TugasAkhir_6_2.hex" "TugasAkhir_6_2.lss" "TugasAkhir_6_2.eep" "TugasAkhir_6_2.map" "TugasAkhir_6_2.srec" "TugasAkhir_6_2.usersignatures"
 	

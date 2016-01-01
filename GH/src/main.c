@@ -28,6 +28,7 @@ static char strbuf_read[50];
 static char *featureList[15];
 static bool featureStat[15];
 static char *statusList[6];
+static char *statusRes[6];
 
 char up[20] = "coba panjang atas \n";
 char down[20] = "coba panjang bawah \n";
@@ -35,6 +36,11 @@ char still[20] = "coba panjang diam \n";
 
 bool is_sending = false;
 bool is_receive = false;
+
+LARGE_INTEGER frequency;        // ticks per second
+LARGE_INTEGER t1, t2;           // ticks
+double elapsedTime;
+
 
 int menuSelected = 0;
 int maxFeature = 3;
@@ -52,14 +58,9 @@ static usart_rs232_options_t USART_SERIAL_OPTIONS = {
 
 void setUpSerial()
 {
-	// Baud rate selection
-	// BSEL = (2000000 / (2^0 * 16*9600) -1 = 12.0208... ~ 12 -> BSCALE = 0
-	// FBAUD = ( (2000000)/(2^0*16(12+1)) = 9615.384 -> mendekati lah ya
 	
 	USARTC0_BAUDCTRLB = 0; //memastikan BSCALE = 0
 	USARTC0_BAUDCTRLA = 0x0C; // 12
-	//USARTC0_BAUDCTRLB = 0; //Just to be sure that BSCALE is 0
-	//USARTC0_BAUDCTRLA = 0xCF; // 207
 	
 	
 	//Disable interrupts, just for safety
@@ -73,33 +74,30 @@ void setUpSerial()
 
 void sendChar(char c)
 {
-	portENTER_CRITICAL();
+	//portENTER_CRITICAL();
 	while( !(USARTC0_STATUS & USART_DREIF_bm) ); //Wait until DATA buffer is empty
-	portEXIT_CRITICAL();
-	USARTC0_DATA = c;
-	
+	//portEXIT_CRITICAL();
+	USARTC0_DATA = c;	
 }
 
 void sendString(char *text)
 {
 	is_sending=true;
-	//usart_putchar(USART_SERIAL_EXAMPLE, 0b10101011);
 	while(*text)
 	{
-		//sendChar(*text++);
+		sendChar(*text++);
 		//portENTER_CRITICAL();
-		usart_putchar(USART_SERIAL_EXAMPLE, *text++);
+		//usart_putchar(USART_SERIAL_EXAMPLE, *text++);
 		//portEXIT_CRITICAL();
-	}
-	//usart_putchar(USART_SERIAL_EXAMPLE, '\n');
+	}	
 	is_sending=false;
 }
 
 char receiveChar()
 {
-	portENTER_CRITICAL();
+	//portENTER_CRITICAL();
 	while( !(USARTC0_STATUS & USART_RXCIF_bm) ); //Wait until receive finish
-	portEXIT_CRITICAL();
+	//portEXIT_CRITICAL();
 	return USARTC0_DATA;
 }
 
@@ -107,27 +105,44 @@ void receiveString()
 {
 	int i = 0;
 	while(1){
-		//char inp = receiveChar();
+		char inp = receiveChar();
 		//portENTER_CRITICAL();
-		char inp = usart_getchar(USART_SERIAL_EXAMPLE);
+		//char inp = usart_getchar(USART_SERIAL_EXAMPLE);
 		if(inp=='\n') break;
 		else strbuf_read[i++] = inp;
 		//portEXIT_CRITICAL();
-	}/*
-	if(usart_getchar(USART_SERIAL_EXAMPLE)==0b10101011) {
-		while(1){
-			//char inp = receiveChar();
-			portENTER_CRITICAL();
-			char inp = usart_getchar(USART_SERIAL_EXAMPLE);
-			if(inp=='\n') break;
-			else strbuf_read[i++] = inp;
-			portEXIT_CRITICAL();
-			int a = 0;
-			int b = 1;
-			int c = 2;
-			int d = 3;
-		}
-	}*/
+	}
+}
+void timer_start(){
+	// get ticks per second
+	QueryPerformanceFrequency(&frequency);
+
+	// start timer
+	QueryPerformanceCounter(&t1);
+}
+void timer_stop(){
+	QueryPerformanceCounter(&t2);
+
+	// compute and print the elapsed time in millisec
+	elapsedTime = (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart;
+}
+void ping(){
+	timer_start();
+	//send string
+	sendString("P");
+	//receive char
+	receiveString();
+	if(strbuf_read=="P"){
+		timer_stop();	
+	}
+}
+void pingBurts(){
+	double pb[3];
+	int nn;
+	for(nn=0; n<3; n++){
+		ping();
+		pb[nn]=elapsedTime;
+	}
 }
 
 void switchDisplay(int dest){
@@ -141,10 +156,7 @@ void initMenu(void){
 	maxFeature=7;
 	maxStatus=5;
 	
-	for(nn=0; nn<=maxFeature; nn++){
-		//inisialisasi fitur, awalnya empty
-		//snprintf(strbuf_in, sizeof(strbuf_in),"empty", nn);
-		//featureList[nn] = strbuf_in;
+	for(nn=0; nn<maxFeature; nn++){
 		featureStat[nn] = false;
 	}
 	
@@ -163,8 +175,8 @@ void initMenu(void){
 	statusList[3] = "Water Temp     ";
 	statusList[4] = "Watering Manual";
 	
-	for(nn=0; nn<=maxStatus; nn++){
-		//statusList[nn]="...";
+	for(nn=0; nn<maxStatus; nn++){
+		statusRes[nn]="unknown";
 	}
 }
 
@@ -189,21 +201,21 @@ int main (void)
 	PORTC_OUTSET = PIN3_bm; //PC3 as TX
 	PORTC_DIRSET = PIN3_bm; //TX pin as output
 	
-	PORTC_OUTCLR = PIN4_bm; //PC4 as sig-in
-	PORTC_DIRCLR = PIN4_bm; //PC4 pin as input
+	//PORTC_OUTCLR = PIN4_bm; //PC4 as sig-in
+	//PORTC_DIRCLR = PIN4_bm; //PC4 pin as input
 	
 	PORTC_OUTSET = PIN3_bm; //PC5 as sig-out
 	PORTC_DIRSET = PIN3_bm; //PC5 pin as output
 
-	//setUpSerial();
+	setUpSerial();
 	
 	xTaskCreate(printLCD,"",500,NULL,1,NULL);
 	xTaskCreate(button,"",500,NULL,1,NULL);
 	xTaskCreate(menuNav,"",500,NULL,1,NULL);
 	xTaskCreate(Touch, "", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-	xTaskCreate(commGate_IN, "",500, NULL, 0, NULL);
-	xTaskCreate(commGate_OUT, "", 500, NULL, 0, NULL);
-	xTaskCreate(commGate_SIG, "", 500, NULL, 0, NULL);
+	//xTaskCreate(commGate_IN, "",500, NULL, 0, NULL);
+	//xTaskCreate(commGate_OUT, "", 500, NULL, 0, NULL);
+	//xTaskCreate(commGate_SIG, "", 500, NULL, 0, NULL);
 
 	
 	vTaskStartScheduler();
@@ -223,10 +235,7 @@ static portTASK_FUNCTION(printLCD, p_){
 		}
 		
 		//main menu
-		if(menuSelected==0){
-			
-			//snprintf(strbuf_menu, sizeof(strbuf_menu), "Menu %d", menuSelected);
-			//gfx_mono_draw_string(strbuf_menu,0, 0, &sysfont);
+		if(menuSelected==0){			
 			gfx_mono_draw_string("==GH Control Center==",0,0,&sysfont);
 			gfx_mono_draw_string("---------------------",0,(SYSFONT_HEIGHT*1)+1,&sysfont);
 			gfx_mono_draw_string("Ping         Features",0,(SYSFONT_HEIGHT*2)+1,&sysfont);
@@ -235,13 +244,13 @@ static portTASK_FUNCTION(printLCD, p_){
 		//ping
 		else if(menuSelected==1){
 			gfx_mono_draw_string("==    Ping Menu    ==",0,0,&sysfont);
-			//if(still==still) gfx_mono_draw_string("still",0,(SYSFONT_HEIGHT*1)+1,&sysfont);
-			gfx_mono_draw_string(strbuf_read,0,(SYSFONT_HEIGHT*1)+1,&sysfont);
-			gfx_mono_draw_string(strbuf_send,0,(SYSFONT_HEIGHT*2)+1,&sysfont);
+			
+			
 		}
 		//ping burst
 		else if(menuSelected==2){
 			gfx_mono_draw_string("==  PingBrst Menu  ==",0,0,&sysfont);
+			
 		}
 		//features
 		else if(menuSelected==3){
@@ -263,37 +272,18 @@ static portTASK_FUNCTION(printLCD, p_){
 		}
 		//status display
 		else if(menuSelected==4){
+			if(status_displayed<0) status_displayed=maxStatus;
+			else if (status_displayed>maxStatus) status_displayed=0;
+			
+			
 			gfx_mono_draw_string("==   SD's Status   ==",0,0,&sysfont);
-			int jj;
-			
-			
-			gfx_mono_draw_string(statusList[status_displayed],0, (SYSFONT_HEIGHT)+1, &sysfont);
+			snprintf(strbuf_menu, sizeof(strbuf_menu), "Status No.%2d", status_displayed+1);
+			gfx_mono_draw_string(strbuf_menu,0, (SYSFONT_HEIGHT)+1, &sysfont);
+			gfx_mono_draw_string(statusList[status_displayed],0, (SYSFONT_HEIGHT*2)+1, &sysfont);
+			gfx_mono_draw_string(statusRes[status_displayed],0, (SYSFONT_HEIGHT*3)+3, &sysfont);
 		}
 			
-		//gfx_mono_draw_string("<",SYSFONT_WIDTH*19, selected_menu*10, &sysfont);
-			
-		/*
-		int ii;
-		for(ii=0; ii<sizeof(displayed_menu); ii++){
-			int num = displayed_menu[ii];
-			//snprintf(strbuf_menu, sizeof(strbuf_menu), menuList[num]);
-			gfx_mono_draw_string(menuList[num],0, num*10, &sysfont);
-			//vTaskDelay(1/portTICK_PERIOD_MS);
-		}*/
-			
-		//snprintf(strbuf_menu, sizeof(strbuf_menu), "<<");
-		//gfx_mono_draw_string("<",SYSFONT_WIDTH*19, selected_menu*10, &sysfont);
-		//gfx_mono_generic_draw_filled_rect(111,0,8,32,GFX_PIXEL_CLR);
-			
-
-		//snprintf(strbuf_menu, sizeof(strbuf_menu), "%d",selected_menu);
-		//gfx_mono_draw_string(strbuf_menu,0, 0, &sysfont);
-		//vTaskDelay(10/portTICK_PERIOD_MS);
-		//gfx_mono_generic_draw_filled_rect(0,selected_menu*10,128,32,GFX_PIXEL_XOR);
-		//vTaskDelay(1000/portTICK_PERIOD_MS);
-		vTaskDelay(50/portTICK_PERIOD_MS);
-		//gfx_mono_generic_draw_filled_rect(111,0,8,32,GFX_PIXEL_CLR);
-
+		vTaskDelay(50/portTICK_PERIOD_MS);	
 	}
 }
 
@@ -341,6 +331,7 @@ static portTASK_FUNCTION(Touch, p_) {
 }
 
 static portTASK_FUNCTION(menuNav, p_){
+	flagB=10;
 	while(1){
 		
 		vTaskDelay(100 / portTICK_PERIOD_MS);
@@ -348,22 +339,21 @@ static portTASK_FUNCTION(menuNav, p_){
 		//main menu
 		if(menuSelected==0){
 			if(flagB==0) switchDisplay(1);		//goto ping
-			else if(flagB==1) switchDisplay(3);	//goto ping burst
-			else if(flagB==2) switchDisplay(4);	//goto features
+			else if(flagB==1) switchDisplay(3);	//goto 
+			else if(flagB==2) switchDisplay(4);	//goto 
 			if (flagT) switchDisplay(2);		//goto ping burst 
 		}
 		//ping
 		else if(menuSelected==1){
 			if(flagB==0) switchDisplay(0);		//back - goto main
-			else if(flagB==1) {snprintf(strbuf_send, sizeof(strbuf_send), "coba panjang atas \n");}
-			else if(flagB==2) {snprintf(strbuf_send, sizeof(strbuf_send), "coba panjang bawah \n");}
-			else if(flagB==3) {snprintf(strbuf_send, sizeof(strbuf_send), "coba panjang diam \n");}
+			else if(flagB==1) {}
+			else if(flagB==2) {}
+			else if(flagB==3) {}
 			if (flagT) {						//execute!
 				//ping started
+				//sendString("XY\n");
+				ping();
 			}
-			
-			
-			
 		}
 		//ping burst
 		else if(menuSelected==2){
@@ -372,6 +362,8 @@ static portTASK_FUNCTION(menuNav, p_){
 			else if(flagB==2) {}
 			if (flagT) {						//execute!
 				//ping started
+				
+				pingBurts();
 			}
 		}
 		//features
@@ -390,8 +382,8 @@ static portTASK_FUNCTION(menuNav, p_){
 		//status display
 		else if(menuSelected==4){
 			if(flagB==0) switchDisplay(0);		//back - goto main
-			else if(flagB==1) {}				//scroll up
-			else if(flagB==2) {}				//scroll down
+			else if(flagB==1) {status_displayed--;}				//scroll up
+			else if(flagB==2) {status_displayed++;}				//scroll down
 			if (flagT) {						//execute!
 				//ping started
 				
