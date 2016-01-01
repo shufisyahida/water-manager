@@ -37,9 +37,9 @@ char still[20] = "coba panjang diam \n";
 bool is_sending = false;
 bool is_receive = false;
 
-LARGE_INTEGER frequency;        // ticks per second
-LARGE_INTEGER t1, t2;           // ticks
-double elapsedTime;
+//LARGE_INTEGER frequency;        // ticks per second
+//LARGE_INTEGER t1, t2;           // ticks
+//double elapsedTime;
 
 
 int menuSelected = 0;
@@ -113,6 +113,7 @@ void receiveString()
 		//portEXIT_CRITICAL();
 	}
 }
+/*
 void timer_start(){
 	// get ticks per second
 	QueryPerformanceFrequency(&frequency);
@@ -126,22 +127,23 @@ void timer_stop(){
 	// compute and print the elapsed time in millisec
 	elapsedTime = (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart;
 }
+*/
 void ping(){
-	timer_start();
+	//timer_start();
 	//send string
 	sendString("P");
 	//receive char
 	receiveString();
 	if(strbuf_read=="P"){
-		timer_stop();	
+		//timer_stop();	
 	}
 }
 void pingBurts(){
 	double pb[3];
 	int nn;
-	for(nn=0; n<3; n++){
+	for(nn=0; nn<3; nn++){
 		ping();
-		pb[nn]=elapsedTime;
+		//pb[nn]=elapsedTime;
 	}
 }
 
