@@ -15,6 +15,7 @@ void closeTap(void);
 void openTap(void);
 void waterAlertOn(void);
 void waterAlertOff(void);
+void watering(void);
 
 //USART function
 void setUpSerial();
@@ -34,8 +35,9 @@ int isTap1Opened = 0;
 int isTap2Opened = 0;
 int isTap3Opened = 0;
 int isTap4Opened = 0;
+int isWateringTapOpened = 0;
 int waterTemp = 0;
-int waterIntensity = 0;
+int lightIntensity = 0;
 int waterUsage = 0;
 int maxWater = 0;
 int debit = 0;
@@ -182,6 +184,46 @@ static void setWaterDebit(void *pvParameters)
 	}
 }
 
+//Watering from rain tank
+static void watering(void *vpParameters) {
+	int isAuto = 0;
+	if(isAuto==1) {
+		if(lightIntensity>=150  && lightIntensity<=200) {
+			int wateringVol = 500;
+			isWateringTapOpened = 1;
+			openTap();
+			LED_On(LED1);
+			LED_On(LED2);
+			while(wateringVol>=0) {
+				wateringVol--;
+				vTaskDelay(5);
+			}
+			rainTankVolume -= wateringVol;
+			isWateringTapOpened=0;
+			closeTap();
+			LED_Off(LED1);
+			LED_Off(LED2);
+		}
+	} else {
+		int flag = 0;	//terima dari HG
+		if(flag==0) {
+			isWateringTapOpened = 1;
+			openTap();
+			LED_On(LED1);
+			LED_On(LED2);
+			while(rainTankVolume>=0) {
+				rainTankVolume--;
+				vTaskDelay(5);
+			}
+		} else {
+			isWateringTapOpened=0;
+			closeTap();
+			LED_Off(LED1);
+			LED_Off(LED2);
+		}
+	}
+} 
+
 //Menghitung penggunaan air (eeprom)
 static void countWaterUsage(void *vpParameters) {
 	while(1) {
@@ -263,7 +305,7 @@ static void waterAlertTask(void *pvParameters) {
 	}
 }
 
-//Pengukur Tingkat kekeruhan Air dengan metode pengukuran intensitas cahaya yang melewati air (sensor cahaya)
+//Mengukur intensitas cahaya
 static void checkWater(void *pvParameters)
 {
 	while(1)
@@ -272,7 +314,7 @@ static void checkWater(void *pvParameters)
 		lightsensor_measure(); //memulai membaca nilai sensor cahaya dari adc
 		if(lightsensor_data_is_ready()) //jika nilainya sensor cahaysa sudah didapat
 		{
-			waterIntensity = lightsensor_get_raw_value(); //membaca nilai sensor cahaya
+			lightIntensity = lightsensor_get_raw_value(); //membaca nilai sensor cahaya
 		}
 		vTaskDelay(10);
 	}
