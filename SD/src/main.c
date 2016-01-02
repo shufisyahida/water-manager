@@ -28,7 +28,6 @@ int waterIntensity = 0;
 int waterUsage = 0;
 int maxWater = 0;
 int debit = 0;
-
 void setUpSerial(){
 	//Baud rate selection
 	//BSEI = (2000000/(2^0 * 16*9600) -1 = 12.0208.... ~12) ->BSALE =0
@@ -55,6 +54,27 @@ char receiveChar()
 	while(!(USARTC0_STATUS & USART_RXCIF_bm));
 	return USARTC0_DATA;
 }
+
+static void vReceiver(void *pvParameters){
+	while (1){
+		char* cmd = receiveChar();
+		if(cmd=='1'){
+			waterAlertOff();
+			//gfx_mono_draw_string("Tap 1 On ",0,0,&sysfont);
+		}
+		else if(cmd=='a'){
+			waterAlertOn();
+			//gfx_mono_draw_string("Tap 1 Off",0,0,&sysfont);
+		}
+		else if(cmd=='p'){
+			//sendChar('p');
+			//gfx_mono_draw_string("KODE PING",0,0,&sysfont);
+		}
+		vTaskDelay(1);
+	}
+}
+
+
 void sendString(char *text){
 	while(*text){
 		sendChar(*text++);
@@ -296,6 +316,7 @@ int main (void)
 	
 	waterUsage = nvm_eeprom_read_byte(1);
 	setMaxWater(200);
+	/*
 	xTaskCreate(openCloseTap, "", 200, NULL, 1, NULL);
 	xTaskCreate(setWaterDebit, "", 200, NULL, 1, NULL);
 	xTaskCreate(countWaterUsage, "", 400, NULL, 1, NULL);
@@ -303,6 +324,9 @@ int main (void)
 	xTaskCreate(checkWater, "", 200, NULL, 1, NULL);
 	xTaskCreate(vLCD, "", 600, NULL, 1, NULL);
 	xTaskCreate(checkTap, "", 200, NULL, 1, NULL);
-
+	*/
+	xTaskCreate(countWaterUsage, "", 400, NULL, 1, NULL);
+	xTaskCreate(vReceiver, "", 200, NULL, 1, NULL);
+	
 	vTaskStartScheduler();
 }

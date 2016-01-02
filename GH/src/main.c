@@ -4,6 +4,7 @@
 #include <touch_button.h>
 #include <adc_sensors.h>
 #include <stdio.h>
+#include <string.h>
 #include <sysclk.h>
 						
 
@@ -23,8 +24,8 @@ static char reads[100];
 
 static char strbuf_menu[20];
 static char strbuf_in[20];
-static char strbuf_send[50];
-static char strbuf_read[50];
+static char* strbuf_send;
+static char* strbuf_read;
 static char *featureList[15];
 static bool featureStat[15];
 static char *statusList[6];
@@ -36,6 +37,8 @@ char still[20] = "coba panjang diam \n";
 
 bool is_sending = false;
 bool is_receive = false;
+
+bool flag_ping = false;
 
 //LARGE_INTEGER frequency;        // ticks per second
 //LARGE_INTEGER t1, t2;           // ticks
@@ -109,7 +112,7 @@ void receiveString()
 		//portENTER_CRITICAL();
 		//char inp = usart_getchar(USART_SERIAL_EXAMPLE);
 		if(inp=='\n') break;
-		else strbuf_read[i++] = inp;
+		else reads[i++] = inp;
 		//portEXIT_CRITICAL();
 	}
 }
@@ -128,24 +131,6 @@ void timer_stop(){
 	elapsedTime = (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart;
 }
 */
-void ping(){
-	//timer_start();
-	//send string
-	sendString("P");
-	//receive char
-	receiveString();
-	if(strbuf_read=="P"){
-		//timer_stop();	
-	}
-}
-void pingBurts(){
-	double pb[3];
-	int nn;
-	for(nn=0; nn<3; nn++){
-		ping();
-		//pb[nn]=elapsedTime;
-	}
-}
 
 void switchDisplay(int dest){
 	menuSelected = dest;
@@ -167,8 +152,8 @@ void initMenu(void){
 	featureList[2] = "Tap 3       ";
 	featureList[3] = "Tap 4       ";
 	featureList[4] = "Discharge   ";
-	featureList[5] = "Man Watering";
-	featureList[6] = "Water Farm  ";
+	featureList[5] = "AutoWatering";
+	featureList[6] = "Watering    ";
 	
 	
 	statusList[0] = "Water Usage    ";
@@ -215,8 +200,8 @@ int main (void)
 	xTaskCreate(button,"",500,NULL,1,NULL);
 	xTaskCreate(menuNav,"",500,NULL,1,NULL);
 	xTaskCreate(Touch, "", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-	//xTaskCreate(commGate_IN, "",500, NULL, 0, NULL);
-	//xTaskCreate(commGate_OUT, "", 500, NULL, 0, NULL);
+	xTaskCreate(commGate_IN, "",500, NULL, 0, NULL);
+	xTaskCreate(commGate_OUT, "", 500, NULL, 0, NULL);
 	//xTaskCreate(commGate_SIG, "", 500, NULL, 0, NULL);
 
 	
@@ -227,7 +212,6 @@ static portTASK_FUNCTION(printLCD, p_){
 	ioport_set_pin_level(LCD_BACKLIGHT_ENABLE_PIN, 1);
 	initMenu();
 	while(1){
-		
 		if(switchDisp){
 			portENTER_CRITICAL();
 			gfx_mono_generic_draw_filled_rect(0,0,128,32,GFX_PIXEL_CLR);
@@ -246,7 +230,20 @@ static portTASK_FUNCTION(printLCD, p_){
 		//ping
 		else if(menuSelected==1){
 			gfx_mono_draw_string("==    Ping Menu    ==",0,0,&sysfont);
-			
+			if(flag_ping){
+				
+				sendChar('p');
+				char x = receiveChar();
+				if(x=='p'){
+					gfx_mono_draw_string("Ping Balik!",0,(SYSFONT_HEIGHT*1)+1,&sysfont);
+				}
+				else{
+					gfx_mono_draw_string("Ping       ",0,(SYSFONT_HEIGHT*1)+1,&sysfont);
+				}
+				
+				//gfx_mono_draw_string(strbuf_send,0,(SYSFONT_HEIGHT*1)+1,&sysfont);
+				//gfx_mono_draw_string(strbuf_read,0,(SYSFONT_HEIGHT*2)+1,&sysfont);	
+			}
 			
 		}
 		//ping burst
@@ -258,7 +255,7 @@ static portTASK_FUNCTION(printLCD, p_){
 		else if(menuSelected==3){
 			
 			if(feature_selected<0) feature_selected=maxFeature;
-			else if (feature_selected>maxFeature) feature_selected=0;
+			else if (feature_selected>=maxFeature) feature_selected=0;
 			
 			gfx_mono_draw_string("==  Features Menu  ==",0,0,&sysfont);
 			
@@ -266,25 +263,68 @@ static portTASK_FUNCTION(printLCD, p_){
 			gfx_mono_draw_string(strbuf_menu,0, (SYSFONT_HEIGHT)+1, &sysfont);
 			gfx_mono_draw_string(featureList[feature_selected],0, (SYSFONT_HEIGHT*2)+1, &sysfont);
 			gfx_mono_draw_string("   A             B   ",0, (SYSFONT_HEIGHT*3)+3, &sysfont);
+			//gfx_mono_generic_draw_filled_rect((SYSFONT_WIDTH*2)-1,(SYSFONT_HEIGHT*3)+2,SYSFONT_WIDTH*3,SYSFONT_HEIGHT+2,GFX_PIXEL_XOR);
 			if(!featureStat[feature_selected]){
 				gfx_mono_generic_draw_filled_rect((SYSFONT_WIDTH*2)-1,(SYSFONT_HEIGHT*3)+2,SYSFONT_WIDTH*3,SYSFONT_HEIGHT+2,GFX_PIXEL_XOR);
-			}else{
+				if(feature_selected==0){
+					sendChar('1');
+				}
+				else if(feature_selected==1){
+					sendChar('2');
+				}
+				else if(feature_selected==2){
+					sendChar('3');
+				}
+				else if(feature_selected==3){
+					sendChar('4');
+				}
+				else if(feature_selected==4){
+					sendChar('5');
+				}
+				else if(feature_selected==5){
+					sendChar('6');
+				}
+				else if(feature_selected==6){
+					sendChar('7');
+				}
+			}
+			else{
 				gfx_mono_generic_draw_filled_rect((SYSFONT_WIDTH*16)-1,(SYSFONT_HEIGHT*3)+2,SYSFONT_WIDTH*3,SYSFONT_HEIGHT+2,GFX_PIXEL_XOR);
+				if(feature_selected==0){
+					sendChar('a');
+				}
+				else if(feature_selected==1){
+					sendChar('b');
+				}
+				else if(feature_selected==2){
+					sendChar('c');
+				}
+				else if(feature_selected==3){
+					sendChar('d');
+				}
+				else if(feature_selected==4){
+					sendChar('e');
+				}
+				else if(feature_selected==5){
+					sendChar('f');
+				}
+				else if(feature_selected==6){
+					sendChar('g');
+				}
 			}
 		}
 		//status display
 		else if(menuSelected==4){
 			if(status_displayed<0) status_displayed=maxStatus;
-			else if (status_displayed>maxStatus) status_displayed=0;
-			
+			else if (status_displayed>=maxStatus) status_displayed=0;
 			
 			gfx_mono_draw_string("==   SD's Status   ==",0,0,&sysfont);
 			snprintf(strbuf_menu, sizeof(strbuf_menu), "Status No.%2d", status_displayed+1);
 			gfx_mono_draw_string(strbuf_menu,0, (SYSFONT_HEIGHT)+1, &sysfont);
 			gfx_mono_draw_string(statusList[status_displayed],0, (SYSFONT_HEIGHT*2)+1, &sysfont);
-			gfx_mono_draw_string(statusRes[status_displayed],0, (SYSFONT_HEIGHT*3)+3, &sysfont);
-		}
 			
+			gfx_mono_draw_string(reads,0, (SYSFONT_HEIGHT*3)+3, &sysfont);
+		}	
 		vTaskDelay(50/portTICK_PERIOD_MS);	
 	}
 }
@@ -353,8 +393,10 @@ static portTASK_FUNCTION(menuNav, p_){
 			else if(flagB==3) {}
 			if (flagT) {						//execute!
 				//ping started
-				//sendString("XY\n");
-				ping();
+				flag_ping=true;
+			}
+			else{
+				flag_ping=false;
 			}
 		}
 		//ping burst
@@ -365,7 +407,6 @@ static portTASK_FUNCTION(menuNav, p_){
 			if (flagT) {						//execute!
 				//ping started
 				
-				pingBurts();
 			}
 		}
 		//features
@@ -387,8 +428,11 @@ static portTASK_FUNCTION(menuNav, p_){
 			else if(flagB==1) {status_displayed--;}				//scroll up
 			else if(flagB==2) {status_displayed++;}				//scroll down
 			if (flagT) {						//execute!
-				//ping started
-				
+				//update status
+				is_receive=true;
+			}
+			else{
+				is_receive=false;
 			}
 		}
 
@@ -400,11 +444,11 @@ static portTASK_FUNCTION(commGate_IN, p_){
 	while(1){
 		vTaskDelay(1 / portTICK_PERIOD_MS);
 		//portENTER_CRITICAL();
-		/*
-		if(is_receive==true) {
+		
+		if(is_receive==true){
 			receiveString();
-		}*/
-		receiveString();
+			statusRes[0]=*strbuf_read;
+		}		
 		//portEXIT_CRITICAL();
 	}
 }
@@ -413,7 +457,9 @@ static portTASK_FUNCTION(commGate_OUT, p_){
 	while(1){
 		vTaskDelay(1 / portTICK_PERIOD_MS);
 		//portENTER_CRITICAL();
-		sendString(strbuf_send);
+		if(flag_ping){
+			sendString(strbuf_send);
+		}		
 		//portEXIT_CRITICAL();
 	}
 }
