@@ -9,7 +9,7 @@
 #include <avr/io.h>
 
 #define configUSE_PREEMPTION                            1
-#define configCPU_CLOCK_HZ                              ( ( unsigned long ) 32000000 )
+#define configCPU_CLOCK_HZ                              ( ( unsigned long ) 2000000 )
 #define configTICK_RATE_HZ                              ( ( TickType_t ) 500 )
 #define configMAX_PRIORITIES                            5
 #define configMINIMAL_STACK_SIZE                        ( ( unsigned short ) 85 )
