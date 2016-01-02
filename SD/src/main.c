@@ -10,7 +10,7 @@ void getWaterUsage(void);
 void setMaxWater(int maxWater);
 void setRainTankVolume(int vol);
 void adc_init(void);
-void pwm_init(void);
+//void pwm_init(void);
 void closeTap(void);
 void openTap(void);
 void waterAlertOn(void);
@@ -69,6 +69,7 @@ char receiveChar()
 	while(!(USARTC0_STATUS & USART_RXCIF_bm));
 	return USARTC0_DATA;
 }
+
 void sendString(char *text){
 	while(*text){
 		sendChar(*text++);
@@ -234,7 +235,7 @@ static void countWaterUsage(void *vpParameters) {
 }
 
 //Membuka dan menutup keran (servo)
-void pwm_init(void){
+static void pwm_init(void *pvParameters){
 	PORTC.DIR |= PIN0_bm;
 	
 	TCC0.CTRLA = (PIN2_bm) | (PIN0_bm);
@@ -260,7 +261,7 @@ void openTap(void){
 	TCC0.CTRLB = (PIN4_bm) | (PIN2_bm) | (PIN1_bm);
 	
 	TCC0.PER = 8000;
-	TCC0.CCA = 1;
+	TCC0.CCA = 375;
 }
 
 //Memberi peringatan setiap menggunakan air saat penggunaan air sudah mencapai batas maksimal (buzzer)
@@ -347,6 +348,7 @@ static void vReceiver(void *pvParameters){
 		char cmd = receiveChar();
 		
 		if(cmd=='a'){
+			//gfx_mono_draw_string("a",0,0,&sysfont);
 			if (isTap1Opened==0)
 			{
 				clearLCD();
@@ -361,6 +363,7 @@ static void vReceiver(void *pvParameters){
 				gfx_mono_draw_string("Tap 1 had opened",0,0,&sysfont);
 			}
 		} else if(cmd=='1'){
+			//gfx_mono_draw_string("1",0,0,&sysfont);
 			if (isTap1Opened==1)
 			{
 				gfx_mono_draw_string("Close Tap 1",0,0,&sysfont);
@@ -468,7 +471,8 @@ int main (void)
 	//xTaskCreate(checkWater, "", 200, NULL, 1, NULL);
 	//xTaskCreate(vLCD, "", 600, NULL, 1, NULL);
 	//xTaskCreate(checkTap, "", 200, NULL, 1, NULL);
-	//xTaskCreate(vReceiver, "", 200, NULL, 1, NULL);
-
+	xTaskCreate(vReceiver, "", 200, NULL, 1, NULL);
+	
+	
 	vTaskStartScheduler();
 }
