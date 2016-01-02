@@ -303,12 +303,7 @@ static void checkWater(void *pvParameters)
 }
 //Menampilkan status penggunaan air, status keran, suhu air (LCD)
 void clearLCD(void){
-	int page,column;
-	for (page = 0; page < GFX_MONO_LCD_PAGES; page++) {
-		for (column = 0; column < GFX_MONO_LCD_WIDTH; column++) {
-			gfx_mono_put_byte(page, column, 0x00);
-		}
-	}
+	gfx_mono_draw_string("                    ",0,0,&sysfont);
 }
 
 static void vLCD(void *pvParameters)
@@ -352,57 +347,74 @@ static void vReceiver(void *pvParameters){
 		char cmd = receiveChar();
 		
 		if(cmd=='a'){
-			gfx_mono_draw_string("Recieve command: Close Tap 1",0,0,&sysfont);
-			openTap();
-			isTap1Opened = 1;
-			LED_On(LED0);
+			if (isTap1Opened==0)
+			{
+				clearLCD();
+				gfx_mono_draw_string("Open Tap 1",0,0,&sysfont);
+				openTap();
+				isTap1Opened = 1;
+				LED_On(LED0);
+			} 
+			else
+			{
+				clearLCD();
+				gfx_mono_draw_string("Tap 1 had opened",0,0,&sysfont);
+			}
 		} else if(cmd=='1'){
-			gfx_mono_draw_string("Recieve command: Open Tap 1",0,0,&sysfont);
-			closeTap();
-			isTap1Opened = 0;
-			LED_Off(LED0);
+			if (isTap1Opened==1)
+			{
+				gfx_mono_draw_string("Close Tap 1",0,0,&sysfont);
+				closeTap();
+				isTap1Opened = 0;
+				LED_Off(LED0);
+			} 
+			else
+			{
+				clearLCD();
+				gfx_mono_draw_string("Tap 1 had closed",0,0,&sysfont);
+			}
 		} else if(cmd=='b'){
-			gfx_mono_draw_string("Recieve command: Close Tap 2",0,0,&sysfont);
+			gfx_mono_draw_string("Open Tap 2",0,0,&sysfont);
 			openTap();
 			isTap2Opened = 1;
 			LED_On(LED1);
 		} else if(cmd=='2'){
-			gfx_mono_draw_string("Recieve command: Open Tap 2",0,0,&sysfont);
+			gfx_mono_draw_string("Close Tap 2",0,0,&sysfont);
 			closeTap();
 			isTap2Opened = 0;
 			LED_Off(LED1);
 		} else if(cmd=='c'){
-			gfx_mono_draw_string("Recieve command: Close Tap 3",0,0,&sysfont);
+			gfx_mono_draw_string("Open Tap 3",0,0,&sysfont);
 			openTap();
 			isTap3Opened = 1;
 			LED_On(LED2);
 		} else if(cmd=='3'){
-			gfx_mono_draw_string("Recieve command: Open Tap 3",0,0,&sysfont);
+			gfx_mono_draw_string("Close Tap 3",0,0,&sysfont);
 			closeTap();
 			isTap3Opened = 0;
 			LED_Off(LED2);
 		} else if(cmd=='d'){
-			gfx_mono_draw_string("Recieve command: Close Tap 4",0,0,&sysfont);
+			gfx_mono_draw_string("Open Tap 4",0,0,&sysfont);
 			openTap();
 			isTap4Opened = 1;
 			LED_On(LED3);
 		} else if(cmd=='4'){
-			gfx_mono_draw_string("Recieve command: Open Tap 4",0,0,&sysfont);
+			gfx_mono_draw_string("Close Tap 4",0,0,&sysfont);
 			closeTap();
 			isTap3Opened = 0;
 			LED_Off(LED3);
 		} else if(cmd=='e'){
-			gfx_mono_draw_string("Recieve command: Water Discharge",0,0,&sysfont);
+			gfx_mono_draw_string("Water Discharge",0,0,&sysfont);
 		} else if(cmd=='5'){
-			gfx_mono_draw_string("Recieve command: Water Discharge",0,0,&sysfont);
+			gfx_mono_draw_string("Water Discharge",0,0,&sysfont);
 		} else if(cmd=='f'){
-			gfx_mono_draw_string("Recieve command: Manual Watering",0,0,&sysfont);
+			gfx_mono_draw_string("Manual Watering",0,0,&sysfont);
 			isAutoWatering = 0;
 		} else if(cmd=='6'){
-			gfx_mono_draw_string("Recieve command: Auto Watering",0,0,&sysfont);
+			gfx_mono_draw_string("Auto Watering",0,0,&sysfont);
 			isAutoWatering = 1;
 		} else if(cmd=='g'){
-			gfx_mono_draw_string("Recieve command: Close Watering Tap",0,0,&sysfont);
+			gfx_mono_draw_string("Open Watering Tap",0,0,&sysfont);
 			if (isAutoWatering==0) {
 				openTap();
 				isWateringTapOpened = 1;
@@ -412,7 +424,7 @@ static void vReceiver(void *pvParameters){
 				gfx_mono_draw_string("Auto Watering Mode ON",0,0,&sysfont);
 			}
 		} else if(cmd=='7'){
-			gfx_mono_draw_string("Recieve command: Open Watering Tap",0,0,&sysfont);
+			gfx_mono_draw_string("Close Watering Tap",0,0,&sysfont);
 			closeTap();
 			isWateringTapOpened = 0;
 			LED_Off(LED0);
@@ -456,7 +468,7 @@ int main (void)
 	//xTaskCreate(checkWater, "", 200, NULL, 1, NULL);
 	//xTaskCreate(vLCD, "", 600, NULL, 1, NULL);
 	//xTaskCreate(checkTap, "", 200, NULL, 1, NULL);
-	xTaskCreate(vReceiver, "", 200, NULL, 1, NULL);
+	//xTaskCreate(vReceiver, "", 200, NULL, 1, NULL);
 
 	vTaskStartScheduler();
 }
