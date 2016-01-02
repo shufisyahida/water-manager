@@ -8,12 +8,20 @@
 
 void getWaterUsage(void);
 void setMaxWater(int maxWater);
+void setRainTankVolume(int vol);
 void adc_init(void);
 void pwm_init(void);
 void closeTap(void);
 void openTap(void);
 void waterAlertOn(void);
 void waterAlertOff(void);
+
+//USART function
+void setUpSerial();
+void sendChar(char c);
+char receiveChar();
+void sendString(char *text);
+void receiveString();
 
 #define MY_ADC ADCA
 #define MY_ADC_CH ADC_CH0
@@ -22,7 +30,10 @@ static char strbuf[201];
 
 char reads[100] = "";
 
-int isTapOpened = 0;
+int isTap1Opened = 0;
+int isTap2Opened = 0;
+int isTap3Opened = 0;
+int isTap4Opened = 0;
 int waterTemp = 0;
 int waterIntensity = 0;
 int waterUsage = 0;
@@ -76,14 +87,37 @@ static void openCloseTap(void *pvParameters)
 {
 	 while(1){
 		 if(gpio_pin_is_low(GPIO_PUSH_BUTTON_0)){
-			if(isTapOpened==0) {
+			if(isTap1Opened==0) {
 				openTap();
-				isTapOpened = 1;
-			}
-			else {
+				isTap1Opened = 1;
+			} else {
 				closeTap();
-				isTapOpened = 0;
-			} 
+				isTap1Opened = 0;
+			}
+			
+			if(isTap2Opened==0) {
+				openTap();
+				isTap2Opened = 1;
+				} else {
+				closeTap();
+				isTap2Opened = 0;
+			}
+			
+			if(isTap3Opened==0) {
+				openTap();
+				isTap3Opened = 1;
+			} else {
+				closeTap();
+				isTap3Opened = 0;
+			}
+			
+			if(isTap4Opened==0) {
+				openTap();
+				isTap4Opened = 1;
+			} else {
+				closeTap();
+				isTap4Opened = 0;
+			}
 		 }
 		 vTaskDelay(10);
 	 }
@@ -109,11 +143,14 @@ void getWaterUsage(void) {
 }
 
 void setMaxWater(int max) {
-	nvm_eeprom_write_byte(2, max);
 	maxWater = 1500;
 }
 
-//Mengatur suhu air (potensiometer)
+void setRainTankVolume(int vol) {
+	
+}
+
+//Mengatur debit air (potensiometer)
 void adc_init(void) {
 	struct adc_config adc_conf;
 	struct adc_channel_config adcch_conf;
@@ -264,11 +301,28 @@ static void vLCD(void *pvParameters)
 //tanda kerannya terbuka atau tertutup (led)
 static void checkTap(void *pvParameters) {
 	while(1) {
-		if(isTapOpened == 0) {
-			LED_Off(LED2);
+		if(isTap1Opened == 0) {
+			LED_Off(LED0);
+		} else {
+			LED_On(LED0);
 		}
-		if(isTapOpened == 1) {
+		
+		if(isTap2Opened == 0) {
+			LED_Off(LED1);
+		} else {
+			LED_On(LED1);
+		}
+		
+		if(isTap3Opened == 0) {
+			LED_Off(LED2);
+		} else {
 			LED_On(LED2);
+		}
+		
+		if(isTap4Opened == 0) {
+			LED_Off(LED3);
+			} else {
+			LED_On(LED3);
 		}
 		vTaskDelay(1);
 	}
