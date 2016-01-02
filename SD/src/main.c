@@ -39,6 +39,7 @@ int waterIntensity = 0;
 int waterUsage = 0;
 int maxWater = 0;
 int debit = 0;
+int rainTankVolume = 0;
 
 void setUpSerial(){
 	//Baud rate selection
@@ -123,8 +124,8 @@ static void openCloseTap(void *pvParameters)
 	 }
 }
 
-void getWaterUsage(void) {
-	int i=1;
+int getWaterUsage(void) {
+	int i=3;
 	int Subtotal=0;
 	int total=0;
 	bool habis = false;
@@ -139,15 +140,15 @@ void getWaterUsage(void) {
 		total+=Subtotal;
 		Subtotal=0;
 	}
-	waterUsage=total;
+	return total;
 }
 
 void setMaxWater(int max) {
-	maxWater = 1500;
+	maxWater = max;
 }
 
 void setRainTankVolume(int vol) {
-	
+	rainTankVolume = vol;
 }
 
 //Mengatur debit air (potensiometer)
@@ -185,8 +186,25 @@ static void setWaterDebit(void *pvParameters)
 static void countWaterUsage(void *vpParameters) {
 	while(1) {
 		if(isTapOpened==1) {
-			nvm_eeprom_write_byte(1, waterUsage + debit);
-			waterUsage = nvm_eeprom_read_byte(1);
+			int i=3;
+			int Subtotal=0;
+			int total=0;
+			int index=0;
+			bool habis = false;
+			while(!habis){
+				Subtotal = nvm_eeprom_read_byte(i);
+				if(Subtotal>=255){
+					i++;
+				}
+				else{
+					habis=true;
+				}
+				total+=Subtotal;
+				Subtotal=0;
+				index = i;
+			}
+			waterUsage = total;
+			nvm_eeprom_write_byte(index, total);
 		}
 		vTaskDelay(5);
 	}
