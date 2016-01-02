@@ -2670,6 +2670,8 @@ Discarded input sections
                 0x00000000        0xa src/main.o
  .text.setRainTankVolume
                 0x00000000        0xa src/main.o
+ .text.pwm_init
+                0x00000000       0x28 src/main.o
  .text.waterAlertOn
                 0x00000000        0xc src/main.o
  .text.waterAlertOff
@@ -3077,7 +3079,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x38e2
+.text           0x00000000     0x39da
  *(.vectors)
  .vectors       0x00000000      0x1fc C:/Program Files/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.0.36/gcc/dev/atxmega256a3bu/avrxmega6/crtatxmega256a3bu.o
                 0x00000000                __vector_default
@@ -3467,48 +3469,50 @@ END GROUP
  .text.board_init
                 0x00003150       0x9e src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
                 0x00003150                board_init
+ .text.checkTap
+                0x000031ee       0x76 src/main.o
  .text.setUpSerial
-                0x000031ee       0x1c src/main.o
-                0x000031ee                setUpSerial
+                0x00003264       0x1c src/main.o
+                0x00003264                setUpSerial
  .text.sendChar
-                0x0000320a       0x10 src/main.o
-                0x0000320a                sendChar
+                0x00003280       0x10 src/main.o
+                0x00003280                sendChar
  .text.receiveChar
-                0x0000321a       0x10 src/main.o
-                0x0000321a                receiveChar
+                0x00003290       0x10 src/main.o
+                0x00003290                receiveChar
  .text.adc_init
-                0x0000322a       0x72 src/main.o
-                0x0000322a                adc_init
+                0x000032a0       0x72 src/main.o
+                0x000032a0                adc_init
  .text.closeTap
-                0x0000329c       0x28 src/main.o
-                0x0000329c                closeTap
- .text.openTap  0x000032c4       0x28 src/main.o
-                0x000032c4                openTap
+                0x00003312       0x28 src/main.o
+                0x00003312                closeTap
+ .text.openTap  0x0000333a       0x28 src/main.o
+                0x0000333a                openTap
  .text.clearLCD
-                0x000032ec       0x10 src/main.o
-                0x000032ec                clearLCD
+                0x00003362       0x10 src/main.o
+                0x00003362                clearLCD
  .text.vReceiver
-                0x000032fc      0x25e src/main.o
- .text.main     0x0000355a       0x84 src/main.o
-                0x0000355a                main
+                0x00003372      0x2ce src/main.o
+ .text.main     0x00003640       0x96 src/main.o
+                0x00003640                main
  .text.libgcc.div
-                0x000035de       0x44 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_udivmodsi4.o)
-                0x000035de                __udivmodsi4
+                0x000036d6       0x44 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_udivmodsi4.o)
+                0x000036d6                __udivmodsi4
  .text.libgcc.prologue
-                0x00003622       0x32 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_prologue.o)
-                0x00003622                __prologue_saves__
+                0x0000371a       0x32 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_prologue.o)
+                0x0000371a                __prologue_saves__
  .text.libgcc.prologue
-                0x00003654       0x30 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_epilogue.o)
-                0x00003654                __epilogue_restores__
+                0x0000374c       0x30 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_epilogue.o)
+                0x0000374c                __epilogue_restores__
  .text.avr-libc
-                0x00003684      0x25a c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avrxmega6\libc.a(malloc.o)
-                0x00003684                malloc
-                0x000037ae                free
-                0x000038de                . = ALIGN (0x2)
+                0x0000377c      0x25a c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avrxmega6\libc.a(malloc.o)
+                0x0000377c                malloc
+                0x000038a6                free
+                0x000039d6                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000038de        0x0 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_exit.o)
-                0x000038de                _exit
-                0x000038de                exit
+ .fini9         0x000039d6        0x0 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_exit.o)
+                0x000039d6                _exit
+                0x000039d6                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -3527,11 +3531,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000038de        0x4 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_exit.o)
+ .fini0         0x000039d6        0x4 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega6\libgcc.a(_exit.o)
  *(.fini0)
-                0x000038e2                _etext = .
+                0x000039da                _etext = .
 
-.data           0x00802000      0x11c load address 0x000038e2
+.data           0x00802000      0x182 load address 0x000039da
                 0x00802000                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00802000        0x1 ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(touch_api.o)
@@ -3550,129 +3554,129 @@ END GROUP
  .rodata.str1.1
                 0x00802010        0x5 src/FreeRTOS/tasks.o
  .rodata.str1.1
-                0x00802015      0x106 src/main.o
-                                0x107 (size before relaxing)
+                0x00802015      0x16c src/main.o
+                                0x16d (size before relaxing)
  *(.gnu.linkonce.d*)
-                0x0080211c                . = ALIGN (0x2)
- *fill*         0x0080211b        0x1 
-                0x0080211c                _edata = .
-                0x0080211c                PROVIDE (__data_end, .)
+                0x00802182                . = ALIGN (0x2)
+ *fill*         0x00802181        0x1 
+                0x00802182                _edata = .
+                0x00802182                PROVIDE (__data_end, .)
 
-.bss            0x0080211c      0x2d6
-                0x0080211c                PROVIDE (__bss_start, .)
+.bss            0x00802182      0x2d6
+                0x00802182                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x0080211c        0x3 ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(burst_1_1_10_0_1.o)
- .bss           0x0080211f       0x22 ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(touch_api.o)
-                0x0080211f                burst_proc
-                0x00802121                qt_config_data
-                0x00802128                qt_measure_data
-                0x00802139                lib_status_flags
-                0x0080213b                qt_filter_callback
- .bss           0x00802141       0x1e ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(touch_process.o)
-                0x00802141                sensors
-                0x00802159                num_sensors
-                0x0080215a                dht_counter
- .bss           0x0080215f        0x8 ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(touch_burst_qt.o)
-                0x0080215f                SNS_array
-                0x00802163                SNSK_array
+ .bss           0x00802182        0x3 ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(burst_1_1_10_0_1.o)
+ .bss           0x00802185       0x22 ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(touch_api.o)
+                0x00802185                burst_proc
+                0x00802187                qt_config_data
+                0x0080218e                qt_measure_data
+                0x0080219f                lib_status_flags
+                0x008021a1                qt_filter_callback
+ .bss           0x008021a7       0x1e ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(touch_process.o)
+                0x008021a7                sensors
+                0x008021bf                num_sensors
+                0x008021c0                dht_counter
+ .bss           0x008021c5        0x8 ../src/ASF/thirdparty/qtouch/generic/avr8/qtouch/lib/gcc\libavrxmega6g1-4qt-k-0rs.a(touch_burst_qt.o)
+                0x008021c5                SNS_array
+                0x008021c9                SNSK_array
  *(.bss*)
  .bss.ntc_sensor_samples.4879
-                0x00802167        0x1 src/adc_sensors/adc_sensors.o
+                0x008021cd        0x1 src/adc_sensors/adc_sensors.o
  .bss.light_sensor_samples.4878
-                0x00802168        0x1 src/adc_sensors/adc_sensors.o
+                0x008021ce        0x1 src/adc_sensors/adc_sensors.o
  .bss.light_sensor_sample
-                0x00802169        0x2 src/adc_sensors/adc_sensors.o
-                0x00802169                light_sensor_sample
+                0x008021cf        0x2 src/adc_sensors/adc_sensors.o
+                0x008021cf                light_sensor_sample
  .bss.ntc_sensor_sample
-                0x0080216b        0x2 src/adc_sensors/adc_sensors.o
-                0x0080216b                ntc_sensor_sample
+                0x008021d1        0x2 src/adc_sensors/adc_sensors.o
+                0x008021d1                ntc_sensor_sample
  .bss.light_sensor_data_ready
-                0x0080216d        0x1 src/adc_sensors/adc_sensors.o
-                0x0080216d                light_sensor_data_ready
+                0x008021d3        0x1 src/adc_sensors/adc_sensors.o
+                0x008021d3                light_sensor_data_ready
  .bss.ntc_sensor_data_ready
-                0x0080216e        0x1 src/adc_sensors/adc_sensors.o
-                0x0080216e                ntc_sensor_data_ready
+                0x008021d4        0x1 src/adc_sensors/adc_sensors.o
+                0x008021d4                ntc_sensor_data_ready
  .bss.framebuffer
-                0x0080216f      0x200 src/ASF/common/services/gfx_mono/gfx_mono_c12832_a1z.o
+                0x008021d5      0x200 src/ASF/common/services/gfx_mono/gfx_mono_c12832_a1z.o
  .bss.adcb_enable_count
-                0x0080236f        0x1 src/ASF/xmega/drivers/adc/adc.o
+                0x008023d5        0x1 src/ASF/xmega/drivers/adc/adc.o
  .bss.adca_enable_count
-                0x00802370        0x1 src/ASF/xmega/drivers/adc/adc.o
- .bss.transfer  0x00802371        0xb src/ASF/xmega/drivers/twi/twim.o
+                0x008023d6        0x1 src/ASF/xmega/drivers/adc/adc.o
+ .bss.transfer  0x008023d7        0xb src/ASF/xmega/drivers/twi/twim.o
  .bss.fbpointer
-                0x0080237c        0x2 src/ASF/common/services/gfx_mono/gfx_mono_framebuffer.o
+                0x008023e2        0x2 src/ASF/common/services/gfx_mono/gfx_mono_framebuffer.o
  .bss.uxSchedulerSuspended
-                0x0080237e        0x1 src/FreeRTOS/tasks.o
+                0x008023e4        0x1 src/FreeRTOS/tasks.o
  .bss.uxTaskNumber
-                0x0080237f        0x1 src/FreeRTOS/tasks.o
+                0x008023e5        0x1 src/FreeRTOS/tasks.o
  .bss.xNumOfOverflows
-                0x00802380        0x1 src/FreeRTOS/tasks.o
+                0x008023e6        0x1 src/FreeRTOS/tasks.o
  .bss.xYieldPending
-                0x00802381        0x1 src/FreeRTOS/tasks.o
+                0x008023e7        0x1 src/FreeRTOS/tasks.o
  .bss.uxPendedTicks
-                0x00802382        0x1 src/FreeRTOS/tasks.o
+                0x008023e8        0x1 src/FreeRTOS/tasks.o
  .bss.xSchedulerRunning
-                0x00802383        0x1 src/FreeRTOS/tasks.o
+                0x008023e9        0x1 src/FreeRTOS/tasks.o
  .bss.uxTopReadyPriority
-                0x00802384        0x1 src/FreeRTOS/tasks.o
+                0x008023ea        0x1 src/FreeRTOS/tasks.o
  .bss.xTickCount
-                0x00802385        0x2 src/FreeRTOS/tasks.o
+                0x008023eb        0x2 src/FreeRTOS/tasks.o
  .bss.uxCurrentNumberOfTasks
-                0x00802387        0x1 src/FreeRTOS/tasks.o
+                0x008023ed        0x1 src/FreeRTOS/tasks.o
  .bss.xPendingReadyList
-                0x00802388        0x9 src/FreeRTOS/tasks.o
+                0x008023ee        0x9 src/FreeRTOS/tasks.o
  .bss.pxOverflowDelayedTaskList
-                0x00802391        0x2 src/FreeRTOS/tasks.o
+                0x008023f7        0x2 src/FreeRTOS/tasks.o
  .bss.pxDelayedTaskList
-                0x00802393        0x2 src/FreeRTOS/tasks.o
+                0x008023f9        0x2 src/FreeRTOS/tasks.o
  .bss.xDelayedTaskList2
-                0x00802395        0x9 src/FreeRTOS/tasks.o
+                0x008023fb        0x9 src/FreeRTOS/tasks.o
  .bss.xDelayedTaskList1
-                0x0080239e        0x9 src/FreeRTOS/tasks.o
+                0x00802404        0x9 src/FreeRTOS/tasks.o
  .bss.pxReadyTasksLists
-                0x008023a7       0x2d src/FreeRTOS/tasks.o
+                0x0080240d       0x2d src/FreeRTOS/tasks.o
  .bss.pxCurrentTCB
-                0x008023d4        0x2 src/FreeRTOS/tasks.o
-                0x008023d4                pxCurrentTCB
+                0x0080243a        0x2 src/FreeRTOS/tasks.o
+                0x0080243a                pxCurrentTCB
  .bss.isAutoWatering
-                0x008023d6        0x2 src/main.o
-                0x008023d6                isAutoWatering
- .bss.maxWater  0x008023d8        0x2 src/main.o
-                0x008023d8                maxWater
+                0x0080243c        0x2 src/main.o
+                0x0080243c                isAutoWatering
+ .bss.maxWater  0x0080243e        0x2 src/main.o
+                0x0080243e                maxWater
  .bss.isWateringTapOpened
-                0x008023da        0x2 src/main.o
-                0x008023da                isWateringTapOpened
+                0x00802440        0x2 src/main.o
+                0x00802440                isWateringTapOpened
  .bss.isTap4Opened
-                0x008023dc        0x2 src/main.o
-                0x008023dc                isTap4Opened
+                0x00802442        0x2 src/main.o
+                0x00802442                isTap4Opened
  .bss.isTap3Opened
-                0x008023de        0x2 src/main.o
-                0x008023de                isTap3Opened
+                0x00802444        0x2 src/main.o
+                0x00802444                isTap3Opened
  .bss.isTap2Opened
-                0x008023e0        0x2 src/main.o
-                0x008023e0                isTap2Opened
+                0x00802446        0x2 src/main.o
+                0x00802446                isTap2Opened
  .bss.isTap1Opened
-                0x008023e2        0x2 src/main.o
-                0x008023e2                isTap1Opened
+                0x00802448        0x2 src/main.o
+                0x00802448                isTap1Opened
  *(COMMON)
- COMMON         0x008023e4        0x6 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
-                0x008023e4                sleepmgr_locks
- COMMON         0x008023ea        0x4 src/ASF/xmega/drivers/adc/adc.o
-                0x008023ea                adcb_callback
-                0x008023ec                adca_callback
- COMMON         0x008023ee        0x4 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avrxmega6\libc.a(malloc.o)
-                0x008023ee                __brkval
-                0x008023f0                __flp
-                0x008023f2                PROVIDE (__bss_end, .)
-                0x000038e2                __data_load_start = LOADADDR (.data)
-                0x000039fe                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0080244a        0x6 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+                0x0080244a                sleepmgr_locks
+ COMMON         0x00802450        0x4 src/ASF/xmega/drivers/adc/adc.o
+                0x00802450                adcb_callback
+                0x00802452                adca_callback
+ COMMON         0x00802454        0x4 c:/program files/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avrxmega6\libc.a(malloc.o)
+                0x00802454                __brkval
+                0x00802456                __flp
+                0x00802458                PROVIDE (__bss_end, .)
+                0x000039da                __data_load_start = LOADADDR (.data)
+                0x00003b5c                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x008023f2        0x0
-                0x008023f2                PROVIDE (__noinit_start, .)
+.noinit         0x00802458        0x0
+                0x00802458                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x008023f2                PROVIDE (__noinit_end, .)
-                0x008023f2                _end = .
-                0x008023f2                PROVIDE (__heap_start, .)
+                0x00802458                PROVIDE (__noinit_end, .)
+                0x00802458                _end = .
+                0x00802458                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -3758,7 +3762,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x678
+.debug_aranges  0x00000000      0x688
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x50 src/adc_sensors/adc_sensors.o
@@ -3807,12 +3811,12 @@ END GROUP
  .debug_aranges
                 0x000005c8       0x20 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
  .debug_aranges
-                0x000005e8       0x90 src/main.o
+                0x000005e8       0xa0 src/main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000    0x1195c
+.debug_info     0x00000000    0x119ed
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000     0x1262 src/adc_sensors/adc_sensors.o
  .debug_info    0x00001262     0x188a src/ASF/common/components/display/st7565r/st7565r.o
@@ -3837,7 +3841,7 @@ END GROUP
  .debug_info    0x0000ec36       0x63 src/ASF/xmega/drivers/nvm/nvm_asm.o
  .debug_info    0x0000ec99      0x11d src/ASF/common/services/ioport/xmega/ioport_compat.o
  .debug_info    0x0000edb6      0x6ec src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
- .debug_info    0x0000f4a2     0x24ba src/main.o
+ .debug_info    0x0000f4a2     0x254b src/main.o
 
 .debug_abbrev   0x00000000     0x32d0
  *(.debug_abbrev)
@@ -3866,7 +3870,7 @@ END GROUP
  .debug_abbrev  0x00002c59      0x160 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
  .debug_abbrev  0x00002db9      0x517 src/main.o
 
-.debug_line     0x00000000     0xbbba
+.debug_line     0x00000000     0xbc69
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x865 src/adc_sensors/adc_sensors.o
  .debug_line    0x00000865      0xa88 src/ASF/common/components/display/st7565r/st7565r.o
@@ -3891,9 +3895,9 @@ END GROUP
  .debug_line    0x0000a079      0x11f src/ASF/xmega/drivers/nvm/nvm_asm.o
  .debug_line    0x0000a198      0x49c src/ASF/common/services/ioport/xmega/ioport_compat.o
  .debug_line    0x0000a634      0x4c7 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
- .debug_line    0x0000aafb     0x10bf src/main.o
+ .debug_line    0x0000aafb     0x116e src/main.o
 
-.debug_frame    0x00000000     0x13d8
+.debug_frame    0x00000000     0x13f8
  *(.debug_frame)
  .debug_frame   0x00000000       0xa8 src/adc_sensors/adc_sensors.o
  .debug_frame   0x000000a8       0x58 src/ASF/common/components/display/st7565r/st7565r.o
@@ -3914,9 +3918,9 @@ END GROUP
  .debug_frame   0x000011d0       0x64 src/ASF/common/services/clock/xmega/sysclk.o
  .debug_frame   0x00001234       0x30 src/ASF/common/services/ioport/xmega/ioport_compat.o
  .debug_frame   0x00001264       0x24 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
- .debug_frame   0x00001288      0x150 src/main.o
+ .debug_frame   0x00001288      0x170 src/main.o
 
-.debug_str      0x00000000    0x33f3a
+.debug_str      0x00000000    0x33f4c
  *(.debug_str)
  .debug_str     0x00000000    0x28fce src/adc_sensors/adc_sensors.o
                               0x2986b (size before relaxing)
@@ -3960,10 +3964,10 @@ END GROUP
                               0x26332 (size before relaxing)
  .debug_str     0x00033847       0x77 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
                               0x27d09 (size before relaxing)
- .debug_str     0x000338be      0x67c src/main.o
-                              0x2fcc2 (size before relaxing)
+ .debug_str     0x000338be      0x68e src/main.o
+                              0x2fcd4 (size before relaxing)
 
-.debug_loc      0x00000000     0x768d
+.debug_loc      0x00000000     0x760f
  *(.debug_loc)
  .debug_loc     0x00000000      0x23b src/adc_sensors/adc_sensors.o
  .debug_loc     0x0000023b       0xcd src/ASF/common/components/display/st7565r/st7565r.o
@@ -3983,7 +3987,7 @@ END GROUP
  .debug_loc     0x00006152      0xe7e src/FreeRTOS/tasks.o
  .debug_loc     0x00006fd0      0x205 src/ASF/common/services/clock/xmega/sysclk.o
  .debug_loc     0x000071d5       0x66 src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_loc     0x0000723b      0x452 src/main.o
+ .debug_loc     0x0000723b      0x3d4 src/main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -4003,7 +4007,7 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x788
+.debug_ranges   0x00000000      0x798
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x40 src/adc_sensors/adc_sensors.o
  .debug_ranges  0x00000040       0x10 src/ASF/common/components/display/st7565r/st7565r.o
@@ -4025,7 +4029,7 @@ END GROUP
  .debug_ranges  0x00000668       0x20 src/ASF/xmega/drivers/nvm/nvm_asm.o
  .debug_ranges  0x00000688       0x10 src/ASF/common/services/ioport/xmega/ioport_compat.o
  .debug_ranges  0x00000698       0x10 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
- .debug_ranges  0x000006a8       0xe0 src/main.o
+ .debug_ranges  0x000006a8       0xf0 src/main.o
 
 .debug_macro    0x00000000     0xd32f
  *(.debug_macro)
