@@ -37,8 +37,8 @@ int isTap2Opened = 0;
 int isTap3Opened = 0;
 int isTap4Opened = 0;
 int isWateringTapOpened = 0;
-int waterTemp = 0;
-int lightIntensity = 0;
+volatile int8_t  waterTemp = 0;
+uint32_t lightIntensity = 0;
 int waterUsage = 0;
 int maxWater = 0;
 int debit = 0;
@@ -71,6 +71,15 @@ void pwm_init(void){
 	
 	TCC0.PER = 8000;
 	TCC0.CCA = 375;
+}
+
+static void vServo(void *pvParameters) {
+	while(1) {
+		openTap();
+		vTaskDelay(50);
+		closeTap();
+		vTaskDelay(50);
+	}
 }
 
 void setUpSerial(){
@@ -170,6 +179,8 @@ static void vReceiver(void *pvParameters){
 			{
 				clearLCD();
 				gfx_mono_draw_string("Open Tap 1",0,0,&sysfont);
+				LED_On(LED0);
+				openTap();
 				isTap1Opened = 1;
 			}
 			else
@@ -177,11 +188,13 @@ static void vReceiver(void *pvParameters){
 				clearLCD();
 				gfx_mono_draw_string("Tap 1 had opened",0,0,&sysfont);
 			}
-			} else if(cmd=='1'){
+		} else if(cmd=='1'){
 			if (isTap1Opened==1)
 			{
 				clearLCD();
 				gfx_mono_draw_string("Close Tap 1",0,0,&sysfont);
+				LED_Off(LED0);
+				closeTap();
 				isTap1Opened = 0;
 			}
 			else
@@ -189,11 +202,13 @@ static void vReceiver(void *pvParameters){
 				clearLCD();
 				gfx_mono_draw_string("Tap 1 had closed",0,0,&sysfont);
 			}
-			} else if(cmd=='b'){
+		} else if(cmd=='b'){
 			if (isTap2Opened==0)
 			{
 				clearLCD();
 				gfx_mono_draw_string("Open Tap 2",0,0,&sysfont);
+				LED_On(LED1);
+				openTap();
 				isTap2Opened = 1;
 			}
 			else
@@ -201,11 +216,13 @@ static void vReceiver(void *pvParameters){
 				clearLCD();
 				gfx_mono_draw_string("Tap 2 had opened",0,0,&sysfont);
 			}
-			} else if(cmd=='2'){
+		} else if(cmd=='2'){
 			if (isTap2Opened==1)
 			{
 				clearLCD();
 				gfx_mono_draw_string("Close Tap 2",0,0,&sysfont);
+				LED_Off(LED1);
+				closeTap();
 				isTap2Opened = 0;
 			}
 			else
@@ -213,11 +230,13 @@ static void vReceiver(void *pvParameters){
 				clearLCD();
 				gfx_mono_draw_string("Tap 2 had closed",0,0,&sysfont);
 			}
-			} else if(cmd=='c'){
+		} else if(cmd=='c'){
 			if (isTap3Opened==0)
 			{
 				clearLCD();
 				gfx_mono_draw_string("Open Tap 3",0,0,&sysfont);
+				LED_On(LED2);
+				openTap();
 				isTap3Opened = 1;
 			}
 			else
@@ -225,11 +244,13 @@ static void vReceiver(void *pvParameters){
 				clearLCD();
 				gfx_mono_draw_string("Tap 3 had opened",0,0,&sysfont);
 			}
-			} else if(cmd=='3'){
+		} else if(cmd=='3'){
 			if (isTap1Opened==1)
 			{
 				clearLCD();
 				gfx_mono_draw_string("Close Tap 3",0,0,&sysfont);
+				LED_Off(LED2);
+				closeTap();
 				isTap3Opened = 0;
 			}
 			else
@@ -237,163 +258,92 @@ static void vReceiver(void *pvParameters){
 				clearLCD();
 				gfx_mono_draw_string("Tap 3 had closed",0,0,&sysfont);
 			}
-			} else if(cmd=='d'){
-			if (isTap4Opened==0)
-			{
+		} else if(cmd=='d'){
+				if (isTap4Opened==0)
+				{
+					clearLCD();
+					gfx_mono_draw_string("Open Tap 4",0,0,&sysfont);
+					LED_On(LED3);
+					openTap();
+					isTap4Opened = 1;
+				}
+				else
+				{
+					clearLCD();
+					gfx_mono_draw_string("Tap 4 had opened",0,0,&sysfont);
+				}
+		} else if(cmd=='4'){
+				if (isTap4Opened==1)
+				{
+					clearLCD();
+					gfx_mono_draw_string("Close Tap 4",0,0,&sysfont);
+					LED_Off(LED3);
+					closeTap();
+					isTap4Opened = 0;
+				}
+				else
+				{
+					clearLCD();
+					gfx_mono_draw_string("Tap 4 had closed",0,0,&sysfont);
+				}
+		} else if(cmd=='e') {
+			
 				clearLCD();
-				gfx_mono_draw_string("Open Tap 4",0,0,&sysfont);
-				isTap4Opened = 1;
-			}
-			else
-			{
+				gfx_mono_draw_string("Water Discharge",0,0,&sysfont);
+			
+		} else if(cmd=='5') {
+			
 				clearLCD();
-				gfx_mono_draw_string("Tap 4 had opened",0,0,&sysfont);
-			}
-			} else if(cmd=='4'){
-			if (isTap4Opened==1)
-			{
+				gfx_mono_draw_string("Water Discharge",0,0,&sysfont);
+			
+		} else if(cmd=='f') {
+			
 				clearLCD();
-				gfx_mono_draw_string("Close Tap 4",0,0,&sysfont);
-				isTap4Opened = 0;
-			}
-			else
-			{
+				gfx_mono_draw_string("Manual Watering",0,0,&sysfont);
+				isAutoWatering = 0;
+			
+		} else if(cmd=='6') {
+			
 				clearLCD();
-				gfx_mono_draw_string("Tap 4 had closed",0,0,&sysfont);
-			}
-			} else if(cmd=='e') {
+				gfx_mono_draw_string("Auto Watering",0,0,&sysfont);
+				isAutoWatering = 1;
 			
-			clearLCD();
-			gfx_mono_draw_string("Water Discharge",0,0,&sysfont);
+		} else if(cmd=='g') {
 			
-			} else if(cmd=='5') {
-			
-			clearLCD();
-			gfx_mono_draw_string("Water Discharge",0,0,&sysfont);
-			
-			} else if(cmd=='f') {
-			
-			clearLCD();
-			gfx_mono_draw_string("Manual Watering",0,0,&sysfont);
-			isAutoWatering = 0;
-			
-			} else if(cmd=='6') {
-			
-			clearLCD();
-			gfx_mono_draw_string("Auto Watering",0,0,&sysfont);
-			isAutoWatering = 1;
-			
-			} else if(cmd=='g') {
-			
-			clearLCD();
-			gfx_mono_draw_string("Open Watering Tap",0,0,&sysfont);
-			if (isAutoWatering==0) {
-				isWateringTapOpened = 1;
+				clearLCD();
+				gfx_mono_draw_string("Open Watering Tap",0,0,&sysfont);
+				if (isAutoWatering==0) {
+					LED_On(LED0);
+					LED_On(LED1);
+					openTap();
+					isWateringTapOpened = 1;
 				} else {
+					clearLCD();
+					gfx_mono_draw_string("Auto Watering Mode ON",0,0,&sysfont);
+				}
+			
+		} else if(cmd=='7') {
+			
 				clearLCD();
-				gfx_mono_draw_string("Auto Watering Mode ON",0,0,&sysfont);
-			}
+				gfx_mono_draw_string("Close Watering Tap",0,0,&sysfont);
+				LED_Off(LED0);
+				LED_Off(LED1);
+				closeTap();
+				isWateringTapOpened = 0;
 			
-			} else if(cmd=='7') {
+		} else if(cmd=='p') {
 			
-			clearLCD();
-			gfx_mono_draw_string("Close Watering Tap",0,0,&sysfont);
-			isWateringTapOpened = 0;
+				sendChar('p');
+				gfx_mono_draw_string("Send PING",0,0,&sysfont);
+				
+		} else if (cmd=='q') {
 			
-			} else if(cmd=='p') {
-			
-			sendChar('p');
-			gfx_mono_draw_string("Send PING",0,0,&sysfont);
-			
-		}
-		vTaskDelay(1);
-		
-	}
-}
-
-static void openCloseTap(void *pvParameters)
-{
-	 while(1){
-		
-		if(isTap1Opened==0) {
-			openTap();
-			isTap1Opened = 1;
-		} else {
-			closeTap();
-			isTap1Opened = 0;
-		}
-			
-		if(isTap2Opened==0) {
-			openTap();
-			isTap2Opened = 1;
-			} else {
-			closeTap();
-			isTap2Opened = 0;
-		}
-			
-		if(isTap3Opened==0) {
-			openTap();
-			isTap3Opened = 1;
-		} else {
-			closeTap();
-			isTap3Opened = 0;
-		}
-			
-		if(isTap4Opened==0) {
-			openTap();
-			isTap4Opened = 1;
-		} else {
-			closeTap();
-			isTap4Opened = 0;
-		}
-		
-		if(isWateringTapOpened==0) {
-			openTap();
-			isWateringTapOpened = 1;
-		} else {
-			closeTap();
-			isWateringTapOpened = 0;
+				sendChar('q');
+				gfx_mono_draw_string("Send PINGBURST",0,0,&sysfont);
 		}
 		
 		vTaskDelay(1);
-	 }
-}
-
-static void checkTap(void *pvParameters) {
-	while(1) {
-		if(isTap1Opened == 0) {
-			LED_Off(LED0);
-			} else {
-			LED_On(LED0);
-		}
 		
-		if(isTap2Opened == 0) {
-			LED_Off(LED1);
-			} else {
-			LED_On(LED1);
-		}
-		
-		if(isTap3Opened == 0) {
-			LED_Off(LED2);
-			} else {
-			LED_On(LED2);
-		}
-		
-		if(isTap4Opened == 0) {
-			LED_Off(LED3);
-			} else {
-			LED_On(LED3);
-		}
-		
-		if(isWateringTapOpened == 0) {
-			LED_On(LED0);
-			LED_On(LED1);
-			} else {
-			LED_Off(LED0);
-			LED_Off(LED1);
-		}
-		
-		vTaskDelay(1);
 	}
 }
 
@@ -427,7 +377,7 @@ static void watering(void *vpParameters) {
 	vTaskDelay(1);
 }
 
-static void checkLight(void *pvParameters)
+static void vLightAndTemp(void *pvParameters)
 {
 	while(1)
 	{
@@ -437,6 +387,11 @@ static void checkLight(void *pvParameters)
 		{
 			lightIntensity = lightsensor_get_raw_value(); //membaca nilai sensor cahaya
 		}
+		
+		ntc_measure();												// Mengambil data dari pengukuran suhu oleh NTC temperature sensor
+		while(!ntc_data_is_ready());								// Menunggu data sampai siap untuk ditampilkan
+		waterTemp = ntc_get_temperature();			// Mengambil hasil olah data dalam Celcius
+		
 		vTaskDelay(10);
 	}
 	
@@ -538,11 +493,19 @@ void clearLCD(void){
 	gfx_mono_draw_string("                    ",0,0,&sysfont);
 }
 
+static void coba(void *pvParameters) {
+	while(1) {
+		openTap();
+		vTaskDelay(50);
+		closeTap();
+	}
+	vTaskDelay(50);
+}
 
 int main (void)
 {
 	board_init(); //konfigurasi awal board
-	//sysclk_init(); //konfigurasi awal system clock
+	sysclk_init(); //konfigurasi awal system clock
 	adc_sensors_init();// konfigurasi adc
 	gfx_mono_init(); //konfigurasi awal LCD monochrom
 	tb_init(); //konfigurasi touch button
@@ -566,13 +529,12 @@ int main (void)
 	setRainTankVolume(2550);
 	
 	xTaskCreate(vReceiver, "", 200, NULL, 1, NULL);				// task to receive command
-	xTaskCreate(openCloseTap, "", 200, NULL, 1, NULL);			// task to OPEN or CLOSE tap based on isTapXOpened (X= {1, 2, 3, 4, WateringTank})
-	xTaskCreate(checkTap, "", 200, NULL, 1, NULL);				// task to ON or OFF LED (indicator of tap is OPENED or CLOSED)
 	xTaskCreate(watering, "", 200, NULL, 1, NULL);				// watering from rain tank triggered by isAutoWatering
-	xTaskCreate(checkLight, "", 200, NULL, 1, NULL);			// light intensity 
+	xTaskCreate(vLightAndTemp, "", 200, NULL, 1, NULL);			// light intensity 
 	xTaskCreate(countWaterUsage, "", 400, NULL, 1, NULL);		// triggered when isTapXOpened=1, X = {1, 2, 3, 4}
 	xTaskCreate(setWaterDebit, "", 200, NULL, 1, NULL);			// set debit from potensiometer
-	xTaskCreate(waterAlertTask, "", 400, NULL, 1, NULL);		// alert when water usage more than maxwater		
+	xTaskCreate(waterAlertTask, "", 400, NULL, 1, NULL);		// alert when water usage more than maxwater	
+	xTaskCreate(vServo, "", 400, NULL, 1, NULL);		// alert when water usage more than maxwater		
 	
 	vTaskStartScheduler();
 }
