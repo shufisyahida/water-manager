@@ -2638,14 +2638,14 @@ Discarded input sections
  .text          0x00000000        0x0 src/main.o
  .data          0x00000000        0x0 src/main.o
  .bss           0x00000000        0x0 src/main.o
+ .text.pwm_init
+                0x00000000       0x28 src/main.o
  .text.sendString
                 0x00000000       0x1e src/main.o
  .text.receiveString
                 0x00000000       0x1a src/main.o
  .text.setMaxWater
                 0x00000000        0xa src/main.o
- .text.pwm_init
-                0x00000000       0x28 src/main.o
  .bss.waterTemp
                 0x00000000        0x2 src/main.o
  .bss.reads     0x00000000       0x64 src/main.o
@@ -3501,26 +3501,26 @@ END GROUP
                 0x0000335e       0x52 src/main.o
  .text.checkLight
                 0x000033b0       0x2c src/main.o
- .text.setUpSerial
-                0x000033dc       0x1c src/main.o
-                0x000033dc                setUpSerial
- .text.sendChar
-                0x000033f8       0x10 src/main.o
-                0x000033f8                sendChar
- .text.receiveChar
-                0x00003408       0x10 src/main.o
-                0x00003408                receiveChar
- .text.setRainTankVolume
-                0x00003418       0x62 src/main.o
-                0x00003418                setRainTankVolume
- .text.watering
-                0x0000347a       0xac src/main.o
  .text.adc_init
-                0x00003526       0x72 src/main.o
-                0x00003526                adc_init
+                0x000033dc       0x72 src/main.o
+                0x000033dc                adc_init
+ .text.setUpSerial
+                0x0000344e       0x1c src/main.o
+                0x0000344e                setUpSerial
+ .text.sendChar
+                0x0000346a       0x10 src/main.o
+                0x0000346a                sendChar
+ .text.receiveChar
+                0x0000347a       0x10 src/main.o
+                0x0000347a                receiveChar
  .text.getWaterUsageFromEEPROM
-                0x00003598       0x2e src/main.o
-                0x00003598                getWaterUsageFromEEPROM
+                0x0000348a       0x2e src/main.o
+                0x0000348a                getWaterUsageFromEEPROM
+ .text.setRainTankVolume
+                0x000034b8       0x62 src/main.o
+                0x000034b8                setRainTankVolume
+ .text.watering
+                0x0000351a       0xac src/main.o
  .text.getDelayBasedOnDebit
                 0x000035c6       0x68 src/main.o
                 0x000035c6                getDelayBasedOnDebit
@@ -3897,7 +3897,7 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000    0x13973
+.debug_info     0x00000000    0x1397a
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000     0x1262 src/adc_sensors/adc_sensors.o
  .debug_info    0x00001262     0x188a src/ASF/common/components/display/st7565r/st7565r.o
@@ -3924,9 +3924,9 @@ END GROUP
  .debug_info    0x00010069       0x63 src/ASF/xmega/drivers/cpu/ccp.o
  .debug_info    0x000100cc      0x11d src/ASF/common/services/ioport/xmega/ioport_compat.o
  .debug_info    0x000101e9      0x6ec src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
- .debug_info    0x000108d5     0x309e src/main.o
+ .debug_info    0x000108d5     0x30a5 src/main.o
 
-.debug_abbrev   0x00000000     0x377b
+.debug_abbrev   0x00000000     0x376a
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x3cc src/adc_sensors/adc_sensors.o
  .debug_abbrev  0x000003cc      0x290 src/ASF/common/components/display/st7565r/st7565r.o
@@ -3953,9 +3953,9 @@ END GROUP
  .debug_abbrev  0x00002fab       0x14 src/ASF/xmega/drivers/cpu/ccp.o
  .debug_abbrev  0x00002fbf       0x93 src/ASF/common/services/ioport/xmega/ioport_compat.o
  .debug_abbrev  0x00003052      0x160 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
- .debug_abbrev  0x000031b2      0x5c9 src/main.o
+ .debug_abbrev  0x000031b2      0x5b8 src/main.o
 
-.debug_line     0x00000000     0xcc44
+.debug_line     0x00000000     0xcc45
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x865 src/adc_sensors/adc_sensors.o
  .debug_line    0x00000865      0xa88 src/ASF/common/components/display/st7565r/st7565r.o
@@ -3982,7 +3982,7 @@ END GROUP
  .debug_line    0x0000acc4       0x6e src/ASF/xmega/drivers/cpu/ccp.o
  .debug_line    0x0000ad32      0x49c src/ASF/common/services/ioport/xmega/ioport_compat.o
  .debug_line    0x0000b1ce      0x4c7 src/ASF/xmega/boards/xmega_a3bu_xplained/init.o
- .debug_line    0x0000b695     0x15af src/main.o
+ .debug_line    0x0000b695     0x15b0 src/main.o
 
 .debug_frame    0x00000000     0x17fc
  *(.debug_frame)

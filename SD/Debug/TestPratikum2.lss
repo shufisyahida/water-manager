@@ -15,21 +15,21 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   5 .debug_aranges 000007a8  00000000  00000000  00004258  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00013973  00000000  00000000  00004a00  2**0
+  6 .debug_info   0001397a  00000000  00000000  00004a00  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 0000377b  00000000  00000000  00018373  2**0
+  7 .debug_abbrev 0000376a  00000000  00000000  0001837a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000cc44  00000000  00000000  0001baee  2**0
+  8 .debug_line   0000cc45  00000000  00000000  0001bae4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000017fc  00000000  00000000  00028734  2**2
+  9 .debug_frame  000017fc  00000000  00000000  0002872c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00034554  00000000  00000000  00029f30  2**0
+ 10 .debug_str    00034554  00000000  00000000  00029f28  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00008cd3  00000000  00000000  0005e484  2**0
+ 11 .debug_loc    00008cd3  00000000  00000000  0005e47c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000008e8  00000000  00000000  00067158  2**3
+ 12 .debug_ranges 000008e8  00000000  00000000  00067150  2**3
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  0000d4c7  00000000  00000000  00067a40  2**0
+ 13 .debug_macro  0000d4c7  00000000  00000000  00067a38  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -9127,12 +9127,12 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     32d0:	08 95       	ret
 
 000032d2 <checkTap>:
-	
-	TCC0.CTRLA = (PIN2_bm) | (PIN0_bm);
-	TCC0.CTRLB = (PIN4_bm) | (PIN2_bm) | (PIN1_bm);
-	
-	TCC0.PER = 8000;
-	TCC0.CCA = 375;
+	}
+	waterUsage = nvm_eeprom_read_byte(index);
+}
+
+void setMaxWater(int max) {
+	maxWater = max;
     32d2:	c0 ee       	ldi	r28, 0xE0	; 224
     32d4:	d7 e0       	ldi	r29, 0x07	; 7
     32d6:	ee 24       	eor	r14, r14
@@ -9254,229 +9254,318 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     33d8:	fd dd       	rcall	.-1030   	; 0x2fd4 <vTaskDelay>
     33da:	ec cf       	rjmp	.-40     	; 0x33b4 <checkLight+0x4>
 
-000033dc <setUpSerial>:
-    33dc:	10 92 a7 08 	sts	0x08A7, r1
-    33e0:	8c e0       	ldi	r24, 0x0C	; 12
-    33e2:	80 93 a6 08 	sts	0x08A6, r24
-    33e6:	10 92 a3 08 	sts	0x08A3, r1
-    33ea:	83 e0       	ldi	r24, 0x03	; 3
-    33ec:	80 93 a5 08 	sts	0x08A5, r24
-    33f0:	88 e1       	ldi	r24, 0x18	; 24
-    33f2:	80 93 a4 08 	sts	0x08A4, r24
-    33f6:	08 95       	ret
+000033dc <adc_init>:
+    33dc:	cf 93       	push	r28
+    33de:	df 93       	push	r29
+    33e0:	cd b7       	in	r28, 0x3d	; 61
+    33e2:	de b7       	in	r29, 0x3e	; 62
+    33e4:	2b 97       	sbiw	r28, 0x0b	; 11
+    33e6:	cd bf       	out	0x3d, r28	; 61
+    33e8:	de bf       	out	0x3e, r29	; 62
+    33ea:	be 01       	movw	r22, r28
+    33ec:	6f 5f       	subi	r22, 0xFF	; 255
+    33ee:	7f 4f       	sbci	r23, 0xFF	; 255
+    33f0:	80 e0       	ldi	r24, 0x00	; 0
+    33f2:	92 e0       	ldi	r25, 0x02	; 2
+    33f4:	0e 94 21 0e 	call	0x1c42	; 0x1c42 <adc_read_configuration>
+    33f8:	ae 01       	movw	r20, r28
+    33fa:	48 5f       	subi	r20, 0xF8	; 248
+    33fc:	5f 4f       	sbci	r21, 0xFF	; 255
+    33fe:	61 e0       	ldi	r22, 0x01	; 1
+    3400:	80 e0       	ldi	r24, 0x00	; 0
+    3402:	92 e0       	ldi	r25, 0x02	; 2
+    3404:	0e 94 7d 0e 	call	0x1cfa	; 0x1cfa <adcch_read_configuration>
+    3408:	9a 81       	ldd	r25, Y+2	; 0x02
+    340a:	8b 81       	ldd	r24, Y+3	; 0x03
+    340c:	8f 78       	andi	r24, 0x8F	; 143
+    340e:	80 61       	ori	r24, 0x10	; 16
+    3410:	8b 83       	std	Y+3, r24	; 0x03
+    3412:	89 2f       	mov	r24, r25
+    3414:	81 7e       	andi	r24, 0xE1	; 225
+    3416:	8a 83       	std	Y+2, r24	; 0x02
+    3418:	1c 82       	std	Y+4, r1	; 0x04
+    341a:	86 e0       	ldi	r24, 0x06	; 6
+    341c:	8d 83       	std	Y+5, r24	; 0x05
+    341e:	81 e0       	ldi	r24, 0x01	; 1
+    3420:	88 87       	std	Y+8, r24	; 0x08
+    3422:	19 86       	std	Y+9, r1	; 0x09
+    3424:	be 01       	movw	r22, r28
+    3426:	6f 5f       	subi	r22, 0xFF	; 255
+    3428:	7f 4f       	sbci	r23, 0xFF	; 255
+    342a:	80 e0       	ldi	r24, 0x00	; 0
+    342c:	92 e0       	ldi	r25, 0x02	; 2
+    342e:	0e 94 cd 0d 	call	0x1b9a	; 0x1b9a <adc_write_configuration>
+    3432:	ae 01       	movw	r20, r28
+    3434:	48 5f       	subi	r20, 0xF8	; 248
+    3436:	5f 4f       	sbci	r21, 0xFF	; 255
+    3438:	61 e0       	ldi	r22, 0x01	; 1
+    343a:	80 e0       	ldi	r24, 0x00	; 0
+    343c:	92 e0       	ldi	r25, 0x02	; 2
+    343e:	0e 94 44 0e 	call	0x1c88	; 0x1c88 <adcch_write_configuration>
+    3442:	2b 96       	adiw	r28, 0x0b	; 11
+    3444:	cd bf       	out	0x3d, r28	; 61
+    3446:	de bf       	out	0x3e, r29	; 62
+    3448:	df 91       	pop	r29
+    344a:	cf 91       	pop	r28
+    344c:	08 95       	ret
 
-000033f8 <sendChar>:
-    33f8:	e1 ea       	ldi	r30, 0xA1	; 161
-    33fa:	f8 e0       	ldi	r31, 0x08	; 8
-    33fc:	90 81       	ld	r25, Z
-    33fe:	95 ff       	sbrs	r25, 5
-    3400:	fd cf       	rjmp	.-6      	; 0x33fc <sendChar+0x4>
-    3402:	80 93 a0 08 	sts	0x08A0, r24
-    3406:	08 95       	ret
+0000344e <setUpSerial>:
+    344e:	10 92 a7 08 	sts	0x08A7, r1
+    3452:	8c e0       	ldi	r24, 0x0C	; 12
+    3454:	80 93 a6 08 	sts	0x08A6, r24
+    3458:	10 92 a3 08 	sts	0x08A3, r1
+    345c:	83 e0       	ldi	r24, 0x03	; 3
+    345e:	80 93 a5 08 	sts	0x08A5, r24
+    3462:	88 e1       	ldi	r24, 0x18	; 24
+    3464:	80 93 a4 08 	sts	0x08A4, r24
+    3468:	08 95       	ret
 
-00003408 <receiveChar>:
-    3408:	e1 ea       	ldi	r30, 0xA1	; 161
-    340a:	f8 e0       	ldi	r31, 0x08	; 8
-    340c:	80 81       	ld	r24, Z
-    340e:	88 23       	and	r24, r24
-    3410:	ec f7       	brge	.-6      	; 0x340c <receiveChar+0x4>
-    3412:	80 91 a0 08 	lds	r24, 0x08A0
-    3416:	08 95       	ret
-
-00003418 <setRainTankVolume>:
-    3418:	bf 92       	push	r11
-    341a:	cf 92       	push	r12
-    341c:	df 92       	push	r13
-    341e:	ef 92       	push	r14
-    3420:	ff 92       	push	r15
-    3422:	0f 93       	push	r16
-    3424:	1f 93       	push	r17
-    3426:	cf 93       	push	r28
-    3428:	df 93       	push	r29
-    342a:	80 93 40 24 	sts	0x2440, r24
-    342e:	90 93 41 24 	sts	0x2441, r25
-    3432:	6f ef       	ldi	r22, 0xFF	; 255
-    3434:	70 e0       	ldi	r23, 0x00	; 0
-    3436:	12 d4       	rcall	.+2084   	; 0x3c5c <__divmodhi4>
-    3438:	6b 01       	movw	r12, r22
-    343a:	b8 2e       	mov	r11, r24
-    343c:	8b 01       	movw	r16, r22
-    343e:	e8 2e       	mov	r14, r24
-    3440:	f9 2e       	mov	r15, r25
-    3442:	16 16       	cp	r1, r22
-    3444:	17 06       	cpc	r1, r23
-    3446:	4c f4       	brge	.+18     	; 0x345a <setRainTankVolume+0x42>
-    3448:	c1 e0       	ldi	r28, 0x01	; 1
-    344a:	d0 e0       	ldi	r29, 0x00	; 0
-    344c:	6f ef       	ldi	r22, 0xFF	; 255
-    344e:	ce 01       	movw	r24, r28
-    3450:	94 de       	rcall	.-728    	; 0x317a <nvm_eeprom_write_byte>
-    3452:	21 96       	adiw	r28, 0x01	; 1
-    3454:	0c 17       	cp	r16, r28
-    3456:	1d 07       	cpc	r17, r29
-    3458:	cc f7       	brge	.-14     	; 0x344c <setRainTankVolume+0x34>
-    345a:	ef 28       	or	r14, r15
-    345c:	21 f0       	breq	.+8      	; 0x3466 <setRainTankVolume+0x4e>
-    345e:	6b 2d       	mov	r22, r11
-    3460:	c6 01       	movw	r24, r12
-    3462:	01 96       	adiw	r24, 0x01	; 1
-    3464:	8a de       	rcall	.-748    	; 0x317a <nvm_eeprom_write_byte>
-    3466:	df 91       	pop	r29
-    3468:	cf 91       	pop	r28
-    346a:	1f 91       	pop	r17
-    346c:	0f 91       	pop	r16
-    346e:	ff 90       	pop	r15
-    3470:	ef 90       	pop	r14
-    3472:	df 90       	pop	r13
-    3474:	cf 90       	pop	r12
-    3476:	bf 90       	pop	r11
+0000346a <sendChar>:
+    346a:	e1 ea       	ldi	r30, 0xA1	; 161
+    346c:	f8 e0       	ldi	r31, 0x08	; 8
+    346e:	90 81       	ld	r25, Z
+    3470:	95 ff       	sbrs	r25, 5
+    3472:	fd cf       	rjmp	.-6      	; 0x346e <sendChar+0x4>
+    3474:	80 93 a0 08 	sts	0x08A0, r24
     3478:	08 95       	ret
 
-0000347a <watering>:
-    347a:	01 e0       	ldi	r16, 0x01	; 1
-    347c:	10 e0       	ldi	r17, 0x00	; 0
-    347e:	0f 2e       	mov	r0, r31
-    3480:	f5 ef       	ldi	r31, 0xF5	; 245
-    3482:	ef 2e       	mov	r14, r31
-    3484:	f0 2d       	mov	r31, r0
-    3486:	ff 24       	eor	r15, r15
-    3488:	f3 94       	inc	r15
-    348a:	80 91 3e 24 	lds	r24, 0x243E
-    348e:	90 91 3f 24 	lds	r25, 0x243F
-    3492:	81 30       	cpi	r24, 0x01	; 1
-    3494:	91 05       	cpc	r25, r1
-    3496:	11 f5       	brne	.+68     	; 0x34dc <watering+0x62>
-    3498:	80 91 48 24 	lds	r24, 0x2448
-    349c:	90 91 49 24 	lds	r25, 0x2449
-    34a0:	86 59       	subi	r24, 0x96	; 150
-    34a2:	91 09       	sbc	r25, r1
-    34a4:	c3 97       	sbiw	r24, 0x33	; 51
-    34a6:	88 f7       	brcc	.-30     	; 0x348a <watering+0x10>
-    34a8:	00 93 4a 24 	sts	0x244A, r16
-    34ac:	10 93 4b 24 	sts	0x244B, r17
-    34b0:	ce 2d       	mov	r28, r14
-    34b2:	df 2d       	mov	r29, r15
-    34b4:	85 e0       	ldi	r24, 0x05	; 5
-    34b6:	90 e0       	ldi	r25, 0x00	; 0
-    34b8:	8d dd       	rcall	.-1254   	; 0x2fd4 <vTaskDelay>
-    34ba:	21 97       	sbiw	r28, 0x01	; 1
-    34bc:	d9 f7       	brne	.-10     	; 0x34b4 <watering+0x3a>
-    34be:	80 91 40 24 	lds	r24, 0x2440
-    34c2:	90 91 41 24 	lds	r25, 0x2441
-    34c6:	01 96       	adiw	r24, 0x01	; 1
-    34c8:	80 93 40 24 	sts	0x2440, r24
-    34cc:	90 93 41 24 	sts	0x2441, r25
-    34d0:	a3 df       	rcall	.-186    	; 0x3418 <setRainTankVolume>
-    34d2:	10 92 4a 24 	sts	0x244A, r1
-    34d6:	10 92 4b 24 	sts	0x244B, r1
-    34da:	d7 cf       	rjmp	.-82     	; 0x348a <watering+0x10>
-    34dc:	89 2b       	or	r24, r25
-    34de:	a9 f6       	brne	.-86     	; 0x348a <watering+0x10>
-    34e0:	80 91 4a 24 	lds	r24, 0x244A
-    34e4:	90 91 4b 24 	lds	r25, 0x244B
-    34e8:	01 97       	sbiw	r24, 0x01	; 1
-    34ea:	79 f6       	brne	.-98     	; 0x348a <watering+0x10>
-    34ec:	80 91 40 24 	lds	r24, 0x2440
-    34f0:	90 91 41 24 	lds	r25, 0x2441
-    34f4:	99 23       	and	r25, r25
-    34f6:	ac f0       	brlt	.+42     	; 0x3522 <watering+0xa8>
-    34f8:	01 97       	sbiw	r24, 0x01	; 1
-    34fa:	80 93 40 24 	sts	0x2440, r24
-    34fe:	90 93 41 24 	sts	0x2441, r25
-    3502:	85 e0       	ldi	r24, 0x05	; 5
-    3504:	90 e0       	ldi	r25, 0x00	; 0
-    3506:	66 dd       	rcall	.-1332   	; 0x2fd4 <vTaskDelay>
-    3508:	80 91 40 24 	lds	r24, 0x2440
-    350c:	90 91 41 24 	lds	r25, 0x2441
-    3510:	99 23       	and	r25, r25
-    3512:	3c f0       	brlt	.+14     	; 0x3522 <watering+0xa8>
-    3514:	20 91 4a 24 	lds	r18, 0x244A
-    3518:	30 91 4b 24 	lds	r19, 0x244B
-    351c:	21 30       	cpi	r18, 0x01	; 1
-    351e:	31 05       	cpc	r19, r1
-    3520:	59 f3       	breq	.-42     	; 0x34f8 <watering+0x7e>
-    3522:	7a df       	rcall	.-268    	; 0x3418 <setRainTankVolume>
-    3524:	b2 cf       	rjmp	.-156    	; 0x348a <watering+0x10>
+0000347a <receiveChar>:
+    347a:	e1 ea       	ldi	r30, 0xA1	; 161
+    347c:	f8 e0       	ldi	r31, 0x08	; 8
+    347e:	80 81       	ld	r24, Z
+    3480:	88 23       	and	r24, r24
+    3482:	ec f7       	brge	.-6      	; 0x347e <receiveChar+0x4>
+    3484:	80 91 a0 08 	lds	r24, 0x08A0
+    3488:	08 95       	ret
 
-00003526 <adc_init>:
-    3526:	cf 93       	push	r28
-    3528:	df 93       	push	r29
-    352a:	cd b7       	in	r28, 0x3d	; 61
-    352c:	de b7       	in	r29, 0x3e	; 62
-    352e:	2b 97       	sbiw	r28, 0x0b	; 11
-    3530:	cd bf       	out	0x3d, r28	; 61
-    3532:	de bf       	out	0x3e, r29	; 62
-    3534:	be 01       	movw	r22, r28
-    3536:	6f 5f       	subi	r22, 0xFF	; 255
-    3538:	7f 4f       	sbci	r23, 0xFF	; 255
-    353a:	80 e0       	ldi	r24, 0x00	; 0
-    353c:	92 e0       	ldi	r25, 0x02	; 2
-    353e:	0e 94 21 0e 	call	0x1c42	; 0x1c42 <adc_read_configuration>
-    3542:	ae 01       	movw	r20, r28
-    3544:	48 5f       	subi	r20, 0xF8	; 248
-    3546:	5f 4f       	sbci	r21, 0xFF	; 255
-    3548:	61 e0       	ldi	r22, 0x01	; 1
-    354a:	80 e0       	ldi	r24, 0x00	; 0
-    354c:	92 e0       	ldi	r25, 0x02	; 2
-    354e:	0e 94 7d 0e 	call	0x1cfa	; 0x1cfa <adcch_read_configuration>
-    3552:	9a 81       	ldd	r25, Y+2	; 0x02
-    3554:	8b 81       	ldd	r24, Y+3	; 0x03
-    3556:	8f 78       	andi	r24, 0x8F	; 143
-    3558:	80 61       	ori	r24, 0x10	; 16
-    355a:	8b 83       	std	Y+3, r24	; 0x03
-    355c:	89 2f       	mov	r24, r25
-    355e:	81 7e       	andi	r24, 0xE1	; 225
-    3560:	8a 83       	std	Y+2, r24	; 0x02
-    3562:	1c 82       	std	Y+4, r1	; 0x04
-    3564:	86 e0       	ldi	r24, 0x06	; 6
-    3566:	8d 83       	std	Y+5, r24	; 0x05
-    3568:	81 e0       	ldi	r24, 0x01	; 1
-    356a:	88 87       	std	Y+8, r24	; 0x08
-    356c:	19 86       	std	Y+9, r1	; 0x09
-    356e:	be 01       	movw	r22, r28
-    3570:	6f 5f       	subi	r22, 0xFF	; 255
-    3572:	7f 4f       	sbci	r23, 0xFF	; 255
-    3574:	80 e0       	ldi	r24, 0x00	; 0
-    3576:	92 e0       	ldi	r25, 0x02	; 2
-    3578:	0e 94 cd 0d 	call	0x1b9a	; 0x1b9a <adc_write_configuration>
-    357c:	ae 01       	movw	r20, r28
-    357e:	48 5f       	subi	r20, 0xF8	; 248
-    3580:	5f 4f       	sbci	r21, 0xFF	; 255
-    3582:	61 e0       	ldi	r22, 0x01	; 1
-    3584:	80 e0       	ldi	r24, 0x00	; 0
-    3586:	92 e0       	ldi	r25, 0x02	; 2
-    3588:	0e 94 44 0e 	call	0x1c88	; 0x1c88 <adcch_write_configuration>
-    358c:	2b 96       	adiw	r28, 0x0b	; 11
-    358e:	cd bf       	out	0x3d, r28	; 61
-    3590:	de bf       	out	0x3e, r29	; 62
-    3592:	df 91       	pop	r29
-    3594:	cf 91       	pop	r28
-    3596:	08 95       	ret
+0000348a <getWaterUsageFromEEPROM>:
+    348a:	cf 93       	push	r28
+    348c:	df 93       	push	r29
+    348e:	ce e0       	ldi	r28, 0x0E	; 14
+    3490:	d0 e0       	ldi	r29, 0x00	; 0
+    3492:	ce 01       	movw	r24, r28
+    3494:	3e de       	rcall	.-900    	; 0x3112 <nvm_eeprom_read_byte>
+    3496:	28 2f       	mov	r18, r24
+    3498:	30 e0       	ldi	r19, 0x00	; 0
+    349a:	2f 3f       	cpi	r18, 0xFF	; 255
+    349c:	31 05       	cpc	r19, r1
+    349e:	14 f0       	brlt	.+4      	; 0x34a4 <getWaterUsageFromEEPROM+0x1a>
+    34a0:	21 96       	adiw	r28, 0x01	; 1
+    34a2:	f7 cf       	rjmp	.-18     	; 0x3492 <getWaterUsageFromEEPROM+0x8>
+    34a4:	ce 01       	movw	r24, r28
+    34a6:	35 de       	rcall	.-918    	; 0x3112 <nvm_eeprom_read_byte>
+    34a8:	90 e0       	ldi	r25, 0x00	; 0
+    34aa:	80 93 46 24 	sts	0x2446, r24
+    34ae:	90 93 47 24 	sts	0x2447, r25
+    34b2:	df 91       	pop	r29
+    34b4:	cf 91       	pop	r28
+    34b6:	08 95       	ret
 
-00003598 <getWaterUsageFromEEPROM>:
-    3598:	cf 93       	push	r28
-    359a:	df 93       	push	r29
-    359c:	ce e0       	ldi	r28, 0x0E	; 14
-    359e:	d0 e0       	ldi	r29, 0x00	; 0
-    35a0:	ce 01       	movw	r24, r28
-    35a2:	b7 dd       	rcall	.-1170   	; 0x3112 <nvm_eeprom_read_byte>
-    35a4:	28 2f       	mov	r18, r24
-    35a6:	30 e0       	ldi	r19, 0x00	; 0
-    35a8:	2f 3f       	cpi	r18, 0xFF	; 255
-    35aa:	31 05       	cpc	r19, r1
-    35ac:	14 f0       	brlt	.+4      	; 0x35b2 <getWaterUsageFromEEPROM+0x1a>
-    35ae:	21 96       	adiw	r28, 0x01	; 1
-    35b0:	f7 cf       	rjmp	.-18     	; 0x35a0 <getWaterUsageFromEEPROM+0x8>
-    35b2:	ce 01       	movw	r24, r28
-    35b4:	ae dd       	rcall	.-1188   	; 0x3112 <nvm_eeprom_read_byte>
-    35b6:	90 e0       	ldi	r25, 0x00	; 0
-    35b8:	80 93 46 24 	sts	0x2446, r24
-    35bc:	90 93 47 24 	sts	0x2447, r25
-    35c0:	df 91       	pop	r29
-    35c2:	cf 91       	pop	r28
-    35c4:	08 95       	ret
+000034b8 <setRainTankVolume>:
+}
+
+void setRainTankVolume(int vol) {
+    34b8:	bf 92       	push	r11
+    34ba:	cf 92       	push	r12
+    34bc:	df 92       	push	r13
+    34be:	ef 92       	push	r14
+    34c0:	ff 92       	push	r15
+    34c2:	0f 93       	push	r16
+    34c4:	1f 93       	push	r17
+    34c6:	cf 93       	push	r28
+    34c8:	df 93       	push	r29
+	rainTankVolume = vol;
+    34ca:	80 93 40 24 	sts	0x2440, r24
+    34ce:	90 93 41 24 	sts	0x2441, r25
+
+	int i = vol/255;
+    34d2:	6f ef       	ldi	r22, 0xFF	; 255
+    34d4:	70 e0       	ldi	r23, 0x00	; 0
+    34d6:	c2 d3       	rcall	.+1924   	; 0x3c5c <__divmodhi4>
+    34d8:	6b 01       	movw	r12, r22
+    34da:	b8 2e       	mov	r11, r24
+    34dc:	8b 01       	movw	r16, r22
+	int remainder = vol%255;
+    34de:	e8 2e       	mov	r14, r24
+    34e0:	f9 2e       	mov	r15, r25
+	int a;
+	for(a = 1; a <= i; a++){
+    34e2:	16 16       	cp	r1, r22
+    34e4:	17 06       	cpc	r1, r23
+    34e6:	4c f4       	brge	.+18     	; 0x34fa <setRainTankVolume+0x42>
+    34e8:	c1 e0       	ldi	r28, 0x01	; 1
+    34ea:	d0 e0       	ldi	r29, 0x00	; 0
+		nvm_eeprom_write_byte(a, 255);
+    34ec:	6f ef       	ldi	r22, 0xFF	; 255
+    34ee:	ce 01       	movw	r24, r28
+    34f0:	44 de       	rcall	.-888    	; 0x317a <nvm_eeprom_write_byte>
+	rainTankVolume = vol;
+
+	int i = vol/255;
+	int remainder = vol%255;
+	int a;
+	for(a = 1; a <= i; a++){
+    34f2:	21 96       	adiw	r28, 0x01	; 1
+    34f4:	0c 17       	cp	r16, r28
+    34f6:	1d 07       	cpc	r17, r29
+    34f8:	cc f7       	brge	.-14     	; 0x34ec <setRainTankVolume+0x34>
+		nvm_eeprom_write_byte(a, 255);
+	}
+	
+	if(remainder!=0) {
+    34fa:	ef 28       	or	r14, r15
+    34fc:	21 f0       	breq	.+8      	; 0x3506 <setRainTankVolume+0x4e>
+		nvm_eeprom_write_byte(i+1, remainder);
+    34fe:	6b 2d       	mov	r22, r11
+    3500:	c6 01       	movw	r24, r12
+    3502:	01 96       	adiw	r24, 0x01	; 1
+    3504:	3a de       	rcall	.-908    	; 0x317a <nvm_eeprom_write_byte>
+	}
+	
+}
+    3506:	df 91       	pop	r29
+    3508:	cf 91       	pop	r28
+    350a:	1f 91       	pop	r17
+    350c:	0f 91       	pop	r16
+    350e:	ff 90       	pop	r15
+    3510:	ef 90       	pop	r14
+    3512:	df 90       	pop	r13
+    3514:	cf 90       	pop	r12
+    3516:	bf 90       	pop	r11
+    3518:	08 95       	ret
+
+0000351a <watering>:
+static void watering(void *vpParameters) {
+	while(1) {
+		if(isAutoWatering==1 && lightIntensity>=150  && lightIntensity<=200) {
+			
+			int wateringVol = 500;
+			isWateringTapOpened = 1;	//triggering openCloseTap()
+    351a:	01 e0       	ldi	r16, 0x01	; 1
+    351c:	10 e0       	ldi	r17, 0x00	; 0
+    351e:	0f 2e       	mov	r0, r31
+    3520:	f5 ef       	ldi	r31, 0xF5	; 245
+    3522:	ef 2e       	mov	r14, r31
+    3524:	f0 2d       	mov	r31, r0
+    3526:	ff 24       	eor	r15, r15
+    3528:	f3 94       	inc	r15
+	}
+}
+
+static void watering(void *vpParameters) {
+	while(1) {
+		if(isAutoWatering==1 && lightIntensity>=150  && lightIntensity<=200) {
+    352a:	80 91 3e 24 	lds	r24, 0x243E
+    352e:	90 91 3f 24 	lds	r25, 0x243F
+    3532:	81 30       	cpi	r24, 0x01	; 1
+    3534:	91 05       	cpc	r25, r1
+    3536:	11 f5       	brne	.+68     	; 0x357c <watering+0x62>
+    3538:	80 91 48 24 	lds	r24, 0x2448
+    353c:	90 91 49 24 	lds	r25, 0x2449
+    3540:	86 59       	subi	r24, 0x96	; 150
+    3542:	91 09       	sbc	r25, r1
+    3544:	c3 97       	sbiw	r24, 0x33	; 51
+    3546:	88 f7       	brcc	.-30     	; 0x352a <watering+0x10>
+			
+			int wateringVol = 500;
+			isWateringTapOpened = 1;	//triggering openCloseTap()
+    3548:	00 93 4a 24 	sts	0x244A, r16
+    354c:	10 93 4b 24 	sts	0x244B, r17
+    3550:	ce 2d       	mov	r28, r14
+    3552:	df 2d       	mov	r29, r15
+			
+			while(wateringVol>=0) {
+				wateringVol--;
+				vTaskDelay(5);
+    3554:	85 e0       	ldi	r24, 0x05	; 5
+    3556:	90 e0       	ldi	r25, 0x00	; 0
+    3558:	3d dd       	rcall	.-1414   	; 0x2fd4 <vTaskDelay>
+    355a:	21 97       	sbiw	r28, 0x01	; 1
+		if(isAutoWatering==1 && lightIntensity>=150  && lightIntensity<=200) {
+			
+			int wateringVol = 500;
+			isWateringTapOpened = 1;	//triggering openCloseTap()
+			
+			while(wateringVol>=0) {
+    355c:	d9 f7       	brne	.-10     	; 0x3554 <watering+0x3a>
+				wateringVol--;
+				vTaskDelay(5);
+			}
+			
+			rainTankVolume -= wateringVol;
+    355e:	80 91 40 24 	lds	r24, 0x2440
+    3562:	90 91 41 24 	lds	r25, 0x2441
+    3566:	01 96       	adiw	r24, 0x01	; 1
+    3568:	80 93 40 24 	sts	0x2440, r24
+    356c:	90 93 41 24 	sts	0x2441, r25
+			setRainTankVolume(rainTankVolume);
+    3570:	a3 df       	rcall	.-186    	; 0x34b8 <setRainTankVolume>
+			isWateringTapOpened=0;
+    3572:	10 92 4a 24 	sts	0x244A, r1
+    3576:	10 92 4b 24 	sts	0x244B, r1
+	}
+}
+
+static void watering(void *vpParameters) {
+	while(1) {
+		if(isAutoWatering==1 && lightIntensity>=150  && lightIntensity<=200) {
+    357a:	d7 cf       	rjmp	.-82     	; 0x352a <watering+0x10>
+			
+			rainTankVolume -= wateringVol;
+			setRainTankVolume(rainTankVolume);
+			isWateringTapOpened=0;
+			
+			} else if(isAutoWatering==0 && isWateringTapOpened==1) {
+    357c:	89 2b       	or	r24, r25
+    357e:	a9 f6       	brne	.-86     	; 0x352a <watering+0x10>
+    3580:	80 91 4a 24 	lds	r24, 0x244A
+    3584:	90 91 4b 24 	lds	r25, 0x244B
+    3588:	01 97       	sbiw	r24, 0x01	; 1
+    358a:	79 f6       	brne	.-98     	; 0x352a <watering+0x10>
+			
+			while(rainTankVolume>=0 && isWateringTapOpened==1) {
+    358c:	80 91 40 24 	lds	r24, 0x2440
+    3590:	90 91 41 24 	lds	r25, 0x2441
+    3594:	99 23       	and	r25, r25
+    3596:	ac f0       	brlt	.+42     	; 0x35c2 <watering+0xa8>
+				rainTankVolume--;
+    3598:	01 97       	sbiw	r24, 0x01	; 1
+    359a:	80 93 40 24 	sts	0x2440, r24
+    359e:	90 93 41 24 	sts	0x2441, r25
+				vTaskDelay(5);
+    35a2:	85 e0       	ldi	r24, 0x05	; 5
+    35a4:	90 e0       	ldi	r25, 0x00	; 0
+    35a6:	16 dd       	rcall	.-1492   	; 0x2fd4 <vTaskDelay>
+			setRainTankVolume(rainTankVolume);
+			isWateringTapOpened=0;
+			
+			} else if(isAutoWatering==0 && isWateringTapOpened==1) {
+			
+			while(rainTankVolume>=0 && isWateringTapOpened==1) {
+    35a8:	80 91 40 24 	lds	r24, 0x2440
+    35ac:	90 91 41 24 	lds	r25, 0x2441
+    35b0:	99 23       	and	r25, r25
+    35b2:	3c f0       	brlt	.+14     	; 0x35c2 <watering+0xa8>
+    35b4:	20 91 4a 24 	lds	r18, 0x244A
+    35b8:	30 91 4b 24 	lds	r19, 0x244B
+    35bc:	21 30       	cpi	r18, 0x01	; 1
+    35be:	31 05       	cpc	r19, r1
+    35c0:	59 f3       	breq	.-42     	; 0x3598 <watering+0x7e>
+				rainTankVolume--;
+				vTaskDelay(5);
+			}
+			
+			setRainTankVolume(rainTankVolume);
+    35c2:	7a df       	rcall	.-268    	; 0x34b8 <setRainTankVolume>
+    35c4:	b2 cf       	rjmp	.-156    	; 0x352a <watering+0x10>
 
 000035c6 <getDelayBasedOnDebit>:
+		
+	}
+}
+
+void getDelayBasedOnDebit(void) {
+	if(debit==0) delay = 250;
     35c6:	80 91 42 24 	lds	r24, 0x2442
     35ca:	90 91 43 24 	lds	r25, 0x2443
     35ce:	00 97       	sbiw	r24, 0x00	; 0
@@ -9486,6 +9575,7 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     35d6:	80 93 3c 24 	sts	0x243C, r24
     35da:	90 93 3d 24 	sts	0x243D, r25
     35de:	08 95       	ret
+	else if(debit==1) delay = 200;
     35e0:	81 30       	cpi	r24, 0x01	; 1
     35e2:	91 05       	cpc	r25, r1
     35e4:	39 f4       	brne	.+14     	; 0x35f4 <getDelayBasedOnDebit+0x2e>
@@ -9494,6 +9584,7 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     35ea:	80 93 3c 24 	sts	0x243C, r24
     35ee:	90 93 3d 24 	sts	0x243D, r25
     35f2:	08 95       	ret
+	else if(debit==2) delay = 150;
     35f4:	82 30       	cpi	r24, 0x02	; 2
     35f6:	91 05       	cpc	r25, r1
     35f8:	39 f4       	brne	.+14     	; 0x3608 <getDelayBasedOnDebit+0x42>
@@ -9502,6 +9593,7 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     35fe:	80 93 3c 24 	sts	0x243C, r24
     3602:	90 93 3d 24 	sts	0x243D, r25
     3606:	08 95       	ret
+	else if(debit==3) delay = 100;
     3608:	83 30       	cpi	r24, 0x03	; 3
     360a:	91 05       	cpc	r25, r1
     360c:	39 f4       	brne	.+14     	; 0x361c <getDelayBasedOnDebit+0x56>
@@ -9510,6 +9602,7 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     3612:	80 93 3c 24 	sts	0x243C, r24
     3616:	90 93 3d 24 	sts	0x243D, r25
     361a:	08 95       	ret
+	else if(debit==4) delay = 50;
     361c:	04 97       	sbiw	r24, 0x04	; 4
     361e:	31 f4       	brne	.+12     	; 0x362c <getDelayBasedOnDebit+0x66>
     3620:	82 e3       	ldi	r24, 0x32	; 50
@@ -9519,6 +9612,12 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     362c:	08 95       	ret
 
 0000362e <countWaterUsage>:
+	
+}
+
+static void countWaterUsage(void *vpParameters) {
+	while(1) {
+		if(isTap1Opened==1 || isTap2Opened==1 || isTap3Opened==1 || isTap4Opened==1) {
     362e:	80 91 52 24 	lds	r24, 0x2452
     3632:	90 91 53 24 	lds	r25, 0x2453
     3636:	01 97       	sbiw	r24, 0x01	; 1
@@ -9554,31 +9653,65 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
     367e:	10 e0       	ldi	r17, 0x00	; 0
     3680:	ce e0       	ldi	r28, 0x0E	; 14
     3682:	d0 e0       	ldi	r29, 0x00	; 0
+			int Subtotal=0;
+			int total=0;
+			int index=0;
+			bool habis = false;
+			while(!habis){
+				Subtotal = nvm_eeprom_read_byte(i);
     3684:	ce 01       	movw	r24, r28
     3686:	45 dd       	rcall	.-1398   	; 0x3112 <nvm_eeprom_read_byte>
     3688:	68 2f       	mov	r22, r24
     368a:	70 e0       	ldi	r23, 0x00	; 0
+				if(Subtotal>=255){
     368c:	6f 3f       	cpi	r22, 0xFF	; 255
     368e:	71 05       	cpc	r23, r1
     3690:	5c f0       	brlt	.+22     	; 0x36a8 <countWaterUsage+0x7a>
+					i++;
     3692:	21 96       	adiw	r28, 0x01	; 1
+				}
+				else{
+					habis=true;
+				}
+				total+=Subtotal;
     3694:	06 0f       	add	r16, r22
     3696:	17 1f       	adc	r17, r23
     3698:	f5 cf       	rjmp	.-22     	; 0x3684 <countWaterUsage+0x56>
+				index = i;
+			}
+			waterUsage = total;
+			nvm_eeprom_write_byte(index, total);
+		}
+		getDelayBasedOnDebit();
     369a:	95 df       	rcall	.-214    	; 0x35c6 <getDelayBasedOnDebit>
+		vTaskDelay(delay);
     369c:	80 91 3c 24 	lds	r24, 0x243C
     36a0:	90 91 3d 24 	lds	r25, 0x243D
     36a4:	97 dc       	rcall	.-1746   	; 0x2fd4 <vTaskDelay>
+	}
     36a6:	c3 cf       	rjmp	.-122    	; 0x362e <countWaterUsage>
+					i++;
+				}
+				else{
+					habis=true;
+				}
+				total+=Subtotal;
     36a8:	60 0f       	add	r22, r16
     36aa:	71 1f       	adc	r23, r17
+				Subtotal=0;
+				index = i;
+			}
+			waterUsage = total;
     36ac:	60 93 46 24 	sts	0x2446, r22
     36b0:	70 93 47 24 	sts	0x2447, r23
+			nvm_eeprom_write_byte(index, total);
     36b4:	ce 01       	movw	r24, r28
     36b6:	61 dd       	rcall	.-1342   	; 0x317a <nvm_eeprom_write_byte>
     36b8:	f0 cf       	rjmp	.-32     	; 0x369a <countWaterUsage+0x6c>
 
 000036ba <closeTap>:
+		vTaskDelay(10);
+	}
 }
 
 void closeTap(void){
@@ -9612,6 +9745,7 @@ void closeTap(void){
 
 000036e2 <openTap>:
 }
+
 void openTap(void){
 	PORTC.DIR |= PIN0_bm;
     36e2:	e0 e4       	ldi	r30, 0x40	; 64
@@ -9757,10 +9891,10 @@ static void openCloseTap(void *pvParameters)
     37bc:	a8 cf       	rjmp	.-176    	; 0x370e <openCloseTap+0x4>
 
 000037be <waterAlertOn>:
+	TCC0.PER = 8000;
 	TCC0.CCA = 375;
 }
 
-//Memberi peringatan setiap menggunakan air saat penggunaan air sudah mencapai batas maksimal (buzzer)
 void waterAlertOn(void) {
 	PORTE_DIR=0b00000001;
     37be:	81 e0       	ldi	r24, 0x01	; 1
@@ -9832,9 +9966,9 @@ static void waterAlertTask(void *pvParameters) {
     3836:	d2 cf       	rjmp	.-92     	; 0x37dc <waterAlertTask+0x6>
 
 00003838 <clearLCD>:
-	
+	PORTE_DIR=0b00000001;
+	PORTE_OUT=0b00000000;
 }
-
 
 void clearLCD(void){
 	gfx_mono_draw_string("                    ",0,0,&sysfont);
@@ -9850,7 +9984,7 @@ void clearLCD(void){
 0000384a <vReceiver>:
     384a:	80 e1       	ldi	r24, 0x10	; 16
     384c:	80 93 85 06 	sts	0x0685, r24
-		} else if(cmd=='g') {
+			} else if(cmd=='g') {
 			
 			clearLCD();
 			gfx_mono_draw_string("Open Watering Tap",0,0,&sysfont);
@@ -9864,7 +9998,7 @@ static void vReceiver(void *pvParameters){
 	while (1){
 		
 		char cmd = receiveChar();
-    3854:	d9 dd       	rcall	.-1102   	; 0x3408 <receiveChar>
+    3854:	12 de       	rcall	.-988    	; 0x347a <receiveChar>
 		
 		if(cmd=='a'){
     3856:	81 36       	cpi	r24, 0x61	; 97
@@ -9889,7 +10023,7 @@ static void vReceiver(void *pvParameters){
     3878:	c0 93 52 24 	sts	0x2452, r28
     387c:	d0 93 53 24 	sts	0x2453, r29
     3880:	5d c1       	rjmp	.+698    	; 0x3b3c <vReceiver+0x2f2>
-			} 
+			}
 			else
 			{
 				clearLCD();
@@ -9904,7 +10038,7 @@ static void vReceiver(void *pvParameters){
     3890:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3894:	53 c1       	rjmp	.+678    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='1'){
+			} else if(cmd=='1'){
     3896:	81 33       	cpi	r24, 0x31	; 49
     3898:	f1 f4       	brne	.+60     	; 0x38d6 <vReceiver+0x8c>
 			if (isTap1Opened==1)
@@ -9927,7 +10061,7 @@ static void vReceiver(void *pvParameters){
     38b8:	10 92 52 24 	sts	0x2452, r1
     38bc:	10 92 53 24 	sts	0x2453, r1
     38c0:	3d c1       	rjmp	.+634    	; 0x3b3c <vReceiver+0x2f2>
-			} 
+			}
 			else
 			{
 				clearLCD();
@@ -9942,7 +10076,7 @@ static void vReceiver(void *pvParameters){
     38d0:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     38d4:	33 c1       	rjmp	.+614    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='b'){
+			} else if(cmd=='b'){
     38d6:	82 36       	cpi	r24, 0x62	; 98
     38d8:	f1 f4       	brne	.+60     	; 0x3916 <vReceiver+0xcc>
 			if (isTap2Opened==0)
@@ -9980,7 +10114,7 @@ static void vReceiver(void *pvParameters){
     3910:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3914:	13 c1       	rjmp	.+550    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='2'){
+			} else if(cmd=='2'){
     3916:	82 33       	cpi	r24, 0x32	; 50
     3918:	f1 f4       	brne	.+60     	; 0x3956 <vReceiver+0x10c>
 			if (isTap2Opened==1)
@@ -10018,7 +10152,7 @@ static void vReceiver(void *pvParameters){
     3950:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3954:	f3 c0       	rjmp	.+486    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='c'){
+			} else if(cmd=='c'){
     3956:	83 36       	cpi	r24, 0x63	; 99
     3958:	f1 f4       	brne	.+60     	; 0x3996 <vReceiver+0x14c>
 			if (isTap3Opened==0)
@@ -10056,7 +10190,7 @@ static void vReceiver(void *pvParameters){
     3990:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3994:	d3 c0       	rjmp	.+422    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='3'){
+			} else if(cmd=='3'){
     3996:	83 33       	cpi	r24, 0x33	; 51
     3998:	f1 f4       	brne	.+60     	; 0x39d6 <vReceiver+0x18c>
 			if (isTap1Opened==1)
@@ -10094,7 +10228,7 @@ static void vReceiver(void *pvParameters){
     39d0:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     39d4:	b3 c0       	rjmp	.+358    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='d'){
+			} else if(cmd=='d'){
     39d6:	84 36       	cpi	r24, 0x64	; 100
     39d8:	f1 f4       	brne	.+60     	; 0x3a16 <vReceiver+0x1cc>
 			if (isTap4Opened==0)
@@ -10132,7 +10266,7 @@ static void vReceiver(void *pvParameters){
     3a10:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3a14:	93 c0       	rjmp	.+294    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='4'){
+			} else if(cmd=='4'){
     3a16:	84 33       	cpi	r24, 0x34	; 52
     3a18:	f1 f4       	brne	.+60     	; 0x3a56 <vReceiver+0x20c>
 			if (isTap4Opened==1)
@@ -10170,7 +10304,7 @@ static void vReceiver(void *pvParameters){
     3a50:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3a54:	73 c0       	rjmp	.+230    	; 0x3b3c <vReceiver+0x2f2>
 			}
-		} else if(cmd=='e') {
+			} else if(cmd=='e') {
     3a56:	85 36       	cpi	r24, 0x65	; 101
     3a58:	51 f4       	brne	.+20     	; 0x3a6e <vReceiver+0x224>
 			
@@ -10186,7 +10320,7 @@ static void vReceiver(void *pvParameters){
     3a68:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3a6c:	67 c0       	rjmp	.+206    	; 0x3b3c <vReceiver+0x2f2>
 			
-		} else if(cmd=='5') {
+			} else if(cmd=='5') {
     3a6e:	85 33       	cpi	r24, 0x35	; 53
     3a70:	51 f4       	brne	.+20     	; 0x3a86 <vReceiver+0x23c>
 			
@@ -10202,7 +10336,7 @@ static void vReceiver(void *pvParameters){
     3a80:	0e 94 f3 12 	call	0x25e6	; 0x25e6 <gfx_mono_draw_string>
     3a84:	5b c0       	rjmp	.+182    	; 0x3b3c <vReceiver+0x2f2>
 			
-		} else if(cmd=='f') {
+			} else if(cmd=='f') {
     3a86:	86 36       	cpi	r24, 0x66	; 102
     3a88:	71 f4       	brne	.+28     	; 0x3aa6 <vReceiver+0x25c>
 			
@@ -10221,7 +10355,7 @@ static void vReceiver(void *pvParameters){
     3aa0:	10 92 3f 24 	sts	0x243F, r1
     3aa4:	4b c0       	rjmp	.+150    	; 0x3b3c <vReceiver+0x2f2>
 			
-		} else if(cmd=='6') {
+			} else if(cmd=='6') {
     3aa6:	86 33       	cpi	r24, 0x36	; 54
     3aa8:	71 f4       	brne	.+28     	; 0x3ac6 <vReceiver+0x27c>
 			
@@ -10240,7 +10374,7 @@ static void vReceiver(void *pvParameters){
     3ac0:	d0 93 3f 24 	sts	0x243F, r29
     3ac4:	3b c0       	rjmp	.+118    	; 0x3b3c <vReceiver+0x2f2>
 			
-		} else if(cmd=='g') {
+			} else if(cmd=='g') {
     3ac6:	87 36       	cpi	r24, 0x67	; 103
     3ac8:	f1 f4       	brne	.+60     	; 0x3b06 <vReceiver+0x2bc>
 			
@@ -10263,7 +10397,7 @@ static void vReceiver(void *pvParameters){
     3ae8:	c0 93 4a 24 	sts	0x244A, r28
     3aec:	d0 93 4b 24 	sts	0x244B, r29
     3af0:	25 c0       	rjmp	.+74     	; 0x3b3c <vReceiver+0x2f2>
-			} else {
+				} else {
 				clearLCD();
     3af2:	a2 de       	rcall	.-700    	; 0x3838 <clearLCD>
 				gfx_mono_draw_string("Auto Watering Mode ON",0,0,&sysfont);
@@ -10277,7 +10411,7 @@ static void vReceiver(void *pvParameters){
     3b04:	1b c0       	rjmp	.+54     	; 0x3b3c <vReceiver+0x2f2>
 			}
 			
-		} else if(cmd=='7') {
+			} else if(cmd=='7') {
     3b06:	87 33       	cpi	r24, 0x37	; 55
     3b08:	71 f4       	brne	.+28     	; 0x3b26 <vReceiver+0x2dc>
 			
@@ -10296,12 +10430,12 @@ static void vReceiver(void *pvParameters){
     3b20:	10 92 4b 24 	sts	0x244B, r1
     3b24:	0b c0       	rjmp	.+22     	; 0x3b3c <vReceiver+0x2f2>
 			
-		} else if(cmd=='p') {
+			} else if(cmd=='p') {
     3b26:	80 37       	cpi	r24, 0x70	; 112
     3b28:	49 f4       	brne	.+18     	; 0x3b3c <vReceiver+0x2f2>
 			
 			sendChar('p');
-    3b2a:	66 dc       	rcall	.-1844   	; 0x33f8 <sendChar>
+    3b2a:	9f dc       	rcall	.-1730   	; 0x346a <sendChar>
 			gfx_mono_draw_string("Send PING",0,0,&sysfont);
     3b2c:	27 e0       	ldi	r18, 0x07	; 7
     3b2e:	30 e2       	ldi	r19, 0x20	; 32
@@ -10320,7 +10454,9 @@ static void vReceiver(void *pvParameters){
     3b40:	89 ce       	rjmp	.-750    	; 0x3854 <vReceiver+0xa>
 
 00003b42 <main>:
+	gfx_mono_draw_string("                    ",0,0,&sysfont);
 }
+
 
 int main (void)
 {
@@ -10353,7 +10489,7 @@ static inline void pmic_init(void)
 	pmic_init(); //konfigurasi untuk menyalakan semua interrupt dan mengatur prioritas task
 	//pwm_init();
 	adc_init();
-    3b66:	df dc       	rcall	.-1602   	; 0x3526 <adc_init>
+    3b66:	3a dc       	rcall	.-1932   	; 0x33dc <adc_init>
     3b68:	80 e1       	ldi	r24, 0x10	; 16
     3b6a:	80 93 85 06 	sts	0x0685, r24
 	
@@ -10372,12 +10508,12 @@ static inline void pmic_init(void)
     3b7e:	80 93 42 06 	sts	0x0642, r24
 	
 	setUpSerial();
-    3b82:	2c dc       	rcall	.-1960   	; 0x33dc <setUpSerial>
+    3b82:	65 dc       	rcall	.-1846   	; 0x344e <setUpSerial>
 	
 	getWaterUsageFromEEPROM();
-    3b84:	09 dd       	rcall	.-1518   	; 0x3598 <getWaterUsageFromEEPROM>
-		vTaskDelay(1);
-	 }
+    3b84:	82 dc       	rcall	.-1788   	; 0x348a <getWaterUsageFromEEPROM>
+	}
+	waterUsage = nvm_eeprom_read_byte(index);
 }
 
 void setMaxWater(int max) {
@@ -10394,7 +10530,7 @@ void setMaxWater(int max) {
 	setRainTankVolume(2550);
     3b92:	86 ef       	ldi	r24, 0xF6	; 246
     3b94:	99 e0       	ldi	r25, 0x09	; 9
-    3b96:	40 dc       	rcall	.-1920   	; 0x3418 <setRainTankVolume>
+    3b96:	90 dc       	rcall	.-1760   	; 0x34b8 <setRainTankVolume>
 	
 	xTaskCreate(vReceiver, "", 200, NULL, 1, NULL);				// task to receive command
     3b98:	a1 2c       	mov	r10, r1
@@ -10440,7 +10576,7 @@ void setMaxWater(int max) {
     3be8:	50 e0       	ldi	r21, 0x00	; 0
     3bea:	69 e2       	ldi	r22, 0x29	; 41
     3bec:	70 e2       	ldi	r23, 0x20	; 32
-    3bee:	8d e3       	ldi	r24, 0x3D	; 61
+    3bee:	8d e8       	ldi	r24, 0x8D	; 141
     3bf0:	9a e1       	ldi	r25, 0x1A	; 26
     3bf2:	0e 94 6a 15 	call	0x2ad4	; 0x2ad4 <xTaskGenericCreate>
 	xTaskCreate(checkLight, "", 200, NULL, 1, NULL);			// light intensity 
